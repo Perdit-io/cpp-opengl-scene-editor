@@ -9,3 +9,7 @@ obj/
 # External Assets
 *.zip
 *.rar
+
+# Zed IDE LSP helper
+.zed/
+.cache/

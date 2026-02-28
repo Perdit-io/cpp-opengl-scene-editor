@@ -4,7 +4,7 @@ Author: Angeles, Marc Andrei D.
 Entry Point: src/main.cpp
 
 ## Build Instructions (macOS/Linux) (TODO)
-1. Ensure CMake and a C++ compiler are installed.
+1. Ensure CMake (3.15+) and a C++ compiler are installed.
 2. mkdir build && cd build
 3. cmake ..
 4. make
