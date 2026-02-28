@@ -4,8 +4,8 @@
 * **Language:** C++17
 * **Graphics:** OpenGL 3.3 Core
 * **Windowing:** GLFW 3.3
-* **UI:** Dear ImGui
-* **Math:** GLM
+* **UI:** Dear ImGui v1.92.6-docking
+* **Math:** GLM 1.0.3
 * **Assets:** tinyobjloader & stb_image
 
 ## Key Systems

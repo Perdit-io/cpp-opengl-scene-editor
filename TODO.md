@@ -12,7 +12,7 @@
 - [ ] Undo/Redo (Min. 5 actions)
 - [ ] Play/Edit Mode toggle
 
-## [cite_start]Test Cases [cite: 14-18]
+## Test Cases
 - [ ] 1. Replicate 3-Cube Scene (Exact Transforms)
 - [ ] 2. Assemble Primitive Table (10x1.5x5)
 - [ ] 3. Load Sponza Scene & Navigate
