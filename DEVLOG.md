@@ -1,5 +1,8 @@
 # Development Log - Scene Editor
 
+## Milestone 3: Transform & Hierarchy
+**Goal:** Implement the math for 3D positioning and the parent-child relationship.
+
 ## Milestone 2.5: Architecture Refactor
 **Goal:** Encapsulated the engine lifecycle into a modular `Application` class for a clean `main.cpp`.
 

@@ -5,9 +5,9 @@
 - [ ] Primitives (Cube, Plane, Sphere)
 - [ ] Static mesh (OBJ loading)
 - [ ] Textures (PNG/JPG support)
-- [ ] Object transforms (TRS matrices)
+- [x] Object transforms (TRS matrices)
 - [ ] World outliner (Scene UI list)
-- [ ] Parenting (Transform hierarchy)
+- [x] Parenting (Transform hierarchy)
 - [ ] Object states (Spawn/Delete/Toggle)
 - [ ] Undo/Redo (Min. 5 actions)
 - [ ] Play/Edit Mode toggle
