@@ -1,4 +1,5 @@
 #include "Application.h"
+#include "config.h"
 
 Application::Application(const char* title, int width, int height) {
     if (!InitWindow(title, width, height)) return;

@@ -1,5 +1,6 @@
 #pragma once
-#include "config.h"
+
+struct GLFWwindow;
 
 class Application {
 public:
