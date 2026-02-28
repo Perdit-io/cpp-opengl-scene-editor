@@ -32,7 +32,10 @@ target_include_directories(imgui PUBLIC
 target_link_libraries(imgui PRIVATE glfw glad)
 
 # 4. Main Executable
-add_executable(SceneEditor src/main.cpp)
+add_executable(SceneEditor
+    src/main.cpp
+    src/Application.cpp
+)
 target_include_directories(SceneEditor PRIVATE
     "${CMAKE_SOURCE_DIR}/src"
     "${CMAKE_SOURCE_DIR}/dependencies/glad/include"
