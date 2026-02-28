@@ -1,0 +1,11 @@
+# Build & Binary folders
+build/
+bin/
+obj/
+
+# MacOS junk
+.DS_Store
+
+# External Assets
+*.zip
+*.rar
