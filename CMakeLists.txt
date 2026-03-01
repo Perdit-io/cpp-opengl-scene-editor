@@ -35,6 +35,7 @@ target_link_libraries(imgui PRIVATE glfw glad)
 add_executable(SceneEditor
     src/main.cpp
     src/Application.cpp
+    src/GameObject.cpp
     src/Scene.cpp
 )
 target_include_directories(SceneEditor PRIVATE

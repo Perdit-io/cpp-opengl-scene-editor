@@ -13,15 +13,6 @@ public:
     GameObject* parent = nullptr;
     std::vector<GameObject*> children;
 
-    glm::mat4 GetWorldMatrix() const {
-        if (parent) {
-            return parent->GetWorldMatrix() * transform.GetLocalMatrix();
-        }
-        return transform.GetLocalMatrix();
-    }
-
-    void AddChild(GameObject* child) {
-        child->parent = this;
-        children.push_back(child);
-    }
+    glm::mat4 GetWorldMatrix() const;
+    void AddChild(GameObject* child);
 };
