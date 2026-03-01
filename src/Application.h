@@ -1,6 +1,9 @@
 #pragma once
 
+#include <memory>
+
 struct GLFWwindow;
+class Scene;
 
 class Application {
 public:
@@ -14,4 +17,5 @@ private:
     void Cleanup();
 
     GLFWwindow* m_Window;
+    std::unique_ptr<Scene> m_ActiveScene;
 };

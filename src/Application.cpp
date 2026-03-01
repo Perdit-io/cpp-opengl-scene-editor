@@ -1,9 +1,12 @@
-#include "Application.h"
 #include "config.h"
+#include "Application.h"
+#include "Scene.h"
 
 Application::Application(const char* title, int width, int height) {
     if (!InitWindow(title, width, height)) return;
     InitImGui();
+
+    m_ActiveScene = std::make_unique<Scene>();
 }
 
 Application::~Application() {

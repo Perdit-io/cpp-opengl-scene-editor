@@ -1,5 +1,8 @@
 # Development Log - Scene Editor
 
+## Milestone 4: Scene Management
+**Goal:** Create a central container to manage the lifecycle of all GameObjects
+
 ## Milestone 3: Transform & Hierarchy
 **Goal:** Implement the math for 3D positioning and the parent-child relationship.
 
