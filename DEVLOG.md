@@ -1,5 +1,8 @@
 # Development Log - Scene Editor
 
+## Milestone 5: Shader System
+**Goal:** Implement automated GLSL compilation and cross-platform shader loading logic.
+
 ## Milestone 4: Scene Management
 **Goal:** Create a central container to manage the lifecycle of all GameObjects
 

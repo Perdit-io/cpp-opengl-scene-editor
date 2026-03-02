@@ -37,6 +37,7 @@ add_executable(SceneEditor
     src/Application.cpp
     src/GameObject.cpp
     src/Scene.cpp
+    src/Shader.cpp
 )
 target_include_directories(SceneEditor PRIVATE
     "${CMAKE_SOURCE_DIR}/src"
@@ -53,3 +54,6 @@ if(APPLE)
         "-framework Cocoa"
     )
 endif()
+
+file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/shaders"
+     DESTINATION "${CMAKE_CURRENT_BINARY_DIR}")

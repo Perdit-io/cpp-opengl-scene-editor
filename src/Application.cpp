@@ -1,12 +1,23 @@
 #include "config.h"
 #include "Application.h"
 #include "Scene.h"
+#include "Shader.h"
+
+#include <iostream>
 
 Application::Application(const char* title, int width, int height) {
     if (!InitWindow(title, width, height)) return;
     InitImGui();
 
     m_ActiveScene = std::make_unique<Scene>();
+    try {
+        std::cout << "Testing Shader Compilation..." << std::endl;
+        Shader testShader("shaders/default.vert", "shaders/default.frag");
+        std::cout << "Shader compiled and linked successfully! ID: " << testShader.ID << std::endl;
+    }
+    catch (...) {
+        std::cout << "Shader test failed!" << std::endl;
+    }
 }
 
 Application::~Application() {
