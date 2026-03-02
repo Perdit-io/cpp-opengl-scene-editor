@@ -12,28 +12,28 @@
 namespace {
     std::vector<Vertex> cubeVertices = {
         // Back face
-        {{-0.5f, -0.5f, -0.5f}}, {{ 0.5f, -0.5f, -0.5f}}, {{ 0.5f,  0.5f, -0.5f}},
-        {{ 0.5f,  0.5f, -0.5f}}, {{-0.5f,  0.5f, -0.5f}}, {{-0.5f, -0.5f, -0.5f}},
+        {{-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}}, {{ 0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}}, {{ 0.5f,  0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}},
+        {{ 0.5f,  0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}}, {{-0.5f,  0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}}, {{-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}},
         // Front face
-        {{-0.5f, -0.5f,  0.5f}}, {{ 0.5f, -0.5f,  0.5f}}, {{ 0.5f,  0.5f,  0.5f}},
-        {{ 0.5f,  0.5f,  0.5f}}, {{-0.5f,  0.5f,  0.5f}}, {{-0.5f, -0.5f,  0.5f}},
+        {{-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}}, {{ 0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}}, {{ 0.5f,  0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}},
+        {{ 0.5f,  0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}}, {{-0.5f,  0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}}, {{-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}},
         // Left face
-        {{-0.5f,  0.5f,  0.5f}}, {{-0.5f,  0.5f, -0.5f}}, {{-0.5f, -0.5f, -0.5f}},
-        {{-0.5f, -0.5f, -0.5f}}, {{-0.5f, -0.5f,  0.5f}}, {{-0.5f,  0.5f,  0.5f}},
+        {{-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}}, {{ 0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}}, {{ 0.5f,  0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}},
+        {{ 0.5f,  0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}}, {{-0.5f,  0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}}, {{-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}},
         // Right face
-        {{ 0.5f,  0.5f,  0.5f}}, {{ 0.5f,  0.5f, -0.5f}}, {{ 0.5f, -0.5f, -0.5f}},
-        {{ 0.5f, -0.5f, -0.5f}}, {{ 0.5f, -0.5f,  0.5f}}, {{ 0.5f,  0.5f,  0.5f}},
+        {{-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}}, {{ 0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}}, {{ 0.5f,  0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}},
+        {{ 0.5f,  0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}}, {{-0.5f,  0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}}, {{-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}},
         // Bottom face
-        {{-0.5f, -0.5f, -0.5f}}, {{ 0.5f, -0.5f, -0.5f}}, {{ 0.5f, -0.5f,  0.5f}},
-        {{ 0.5f, -0.5f,  0.5f}}, {{-0.5f, -0.5f,  0.5f}}, {{-0.5f, -0.5f, -0.5f}},
+        {{-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}}, {{ 0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}}, {{ 0.5f,  0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}},
+        {{ 0.5f,  0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}}, {{-0.5f,  0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}}, {{-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}},
         // Top face
-        {{-0.5f,  0.5f, -0.5f}}, {{ 0.5f,  0.5f, -0.5f}}, {{ 0.5f,  0.5f,  0.5f}},
-        {{ 0.5f,  0.5f,  0.5f}}, {{-0.5f,  0.5f,  0.5f}}, {{-0.5f,  0.5f, -0.5f}}
+        {{-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}}, {{ 0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}}, {{ 0.5f,  0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}},
+        {{ 0.5f,  0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}}, {{-0.5f,  0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}}, {{-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}}
     };
 
     std::vector<Vertex> planeVertices = {
-        {{-5.0f, -0.5f, -5.0f}}, {{ 5.0f, -0.5f, -5.0f}}, {{ 5.0f, -0.5f,  5.0f}},
-        {{ 5.0f, -0.5f,  5.0f}}, {{-5.0f, -0.5f,  5.0f}}, {{-5.0f, -0.5f, -5.0f}}
+        {{-10.0f, -0.5f, -10.0f}, {0.0f, 1.0f, 0.0f}}, {{ 10.0f, -0.5f, -10.0f}, {0.0f, 1.0f, 0.0f}}, {{ 10.0f, -0.5f,  10.0f}, {0.0f, 1.0f, 0.0f}},
+        {{ 10.0f, -0.5f,  10.0f}, {0.0f, 1.0f, 0.0f}}, {{-10.0f, -0.5f,  10.0f}, {0.0f, 1.0f, 0.0f}}, {{-10.0f, -0.5f, -10.0f}, {0.0f, 1.0f, 0.0f}}
     };
 }
 
@@ -98,9 +98,7 @@ void Application::Run() {
         double deltaTime = currentTime - lastTime;
 
         // Frame rate limiter
-        if (deltaTime < targetFrameTime) {
-            continue;
-        }
+        if (deltaTime < targetFrameTime) continue;
         lastTime = currentTime;
 
         glfwPollEvents();
@@ -121,24 +119,23 @@ void Application::Run() {
         // --- RENDER START ---
         m_MainShader->Use();
 
-        // Get dynamic aspect ratio
+        m_MainShader->SetVec3("lightPos", glm::vec3(1.5f, 5.0f, 3.0f));
+        m_MainShader->SetVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
+
         int display_w, display_h;
         glfwGetFramebufferSize(m_Window, &display_w, &display_h);
         float aspect = (float)display_w / (float)display_h;
 
-        // View/Projection setup
         glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -1.0f, -8.0f));
         glm::mat4 projection = glm::perspective(glm::radians(45.0f), aspect, 0.1f, 100.0f);
 
         m_MainShader->SetMat4("view", view);
         m_MainShader->SetMat4("projection", projection);
 
-        // 1. Draw Floor (Darker Gray)
         m_MainShader->SetVec3("objectColor", glm::vec3(0.2f, 0.2f, 0.2f));
         m_MainShader->SetMat4("model", glm::mat4(1.0f));
         m_PlaneMesh->Draw();
 
-        // 2. Draw Cubes (Orange)
         m_MainShader->SetVec3("objectColor", glm::vec3(1.0f, 0.5f, 0.2f));
         for (auto& obj : m_ActiveScene->GetRoot()->children) {
             m_MainShader->SetMat4("model", obj->GetWorldMatrix());

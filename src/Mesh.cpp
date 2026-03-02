@@ -18,8 +18,12 @@ void Mesh::SetupMesh() {
     glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0], GL_STATIC_DRAW);
 
     // 3. Set the Vertex Attribute Pointers
+    // Position Attribute (Location 0)
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
+    // Normal Attribute (Location 1)
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Normal));
 
     // Unbind everything so we don't accidentally modify it later
     glBindVertexArray(0);

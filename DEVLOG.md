@@ -1,5 +1,8 @@
 # Development Log - Scene Editor
 
+## Milestone 7: Basic Lighting (Lambertian Shading)
+**Goal:** Implement vertex normals and a basic lighting model (ambient + diffuse) to provide 3D depth and visual volume.
+
 ## Milestone 6: Geometry & Scene Layout
 **Goal:** Implement the physical layout for Test Case 1, including 3D cube primitives, a ground plane, and aspect-ratio corrected perspective rendering.
 
