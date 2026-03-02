@@ -4,6 +4,8 @@
 
 struct GLFWwindow;
 class Scene;
+class Shader;
+class Mesh;
 
 class Application {
 public:
@@ -18,4 +20,7 @@ private:
 
     GLFWwindow* m_Window;
     std::unique_ptr<Scene> m_ActiveScene;
+    std::unique_ptr<Shader> m_MainShader;
+    std::unique_ptr<Mesh> m_CubeMesh;
+    std::unique_ptr<Mesh> m_PlaneMesh;
 };

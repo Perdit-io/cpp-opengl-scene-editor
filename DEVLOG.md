@@ -1,5 +1,8 @@
 # Development Log - Scene Editor
 
+## Milestone 6: Geometry & Scene Layout
+**Goal:** Implement the physical layout for Test Case 1, including 3D cube primitives, a ground plane, and aspect-ratio corrected perspective rendering.
+
 ## Milestone 5: Shader System
 **Goal:** Implement automated GLSL compilation and cross-platform shader loading logic.
 
