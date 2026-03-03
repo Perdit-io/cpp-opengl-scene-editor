@@ -109,39 +109,12 @@ void Application::Run() {
 
         DrawUI();
 
-        glClearColor(0.15f, 0.15f, 0.15f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        // --- RENDER START ---
-        m_MainShader->Use();
-        m_MainShader->SetVec3("lightPos", glm::vec3(1.5f, 5.0f, 3.0f));
-        m_MainShader->SetVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
-
-        int display_w, display_h;
-        glfwGetFramebufferSize(m_Window, &display_w, &display_h);
-        float aspect = (float)display_w / (float)display_h;
-
-        glm::mat4 view = m_Camera->GetViewMatrix();
-        glm::mat4 projection = m_Camera->GetProjectionMatrix(aspect);
-
-        m_MainShader->SetMat4("view", view);
-        m_MainShader->SetMat4("projection", projection);
-
-        m_MainShader->SetVec3("objectColor", glm::vec3(0.2f, 0.2f, 0.2f));
-        m_MainShader->SetMat4("model", glm::mat4(1.0f));
-        m_PlaneMesh->Draw();
-
-        m_MainShader->SetVec3("objectColor", glm::vec3(1.0f, 0.5f, 0.2f));
-        for (auto& obj : m_ActiveScene->GetRoot()->children) {
-            m_MainShader->SetMat4("model", obj->GetWorldMatrix());
-            m_CubeMesh->Draw();
-        }
-        // --- RENDER END ---
+        RenderScene();
 
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-        glfwSwapBuffers(m_Window);
 
+        glfwSwapBuffers(m_Window);
         CleanupDeletedObjects(m_ActiveScene->GetRoot());
     }
 }
@@ -225,6 +198,36 @@ void Application::DrawInspector() {
         ImGui::Text("Select an object to edit.");
     }
     ImGui::End();
+}
+
+void Application::RenderScene() {
+    // 1. Clear buffers
+    glClearColor(0.15f, 0.15f, 0.15f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    // 2. Setup Global Uniforms (Light, View, Proj)
+    m_MainShader->Use();
+    m_MainShader->SetVec3("lightPos", glm::vec3(1.5f, 5.0f, 3.0f));
+    m_MainShader->SetVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
+
+    int display_w, display_h;
+    glfwGetFramebufferSize(m_Window, &display_w, &display_h);
+    float aspect = (float)display_w / (float)display_h;
+
+    m_MainShader->SetMat4("view", m_Camera->GetViewMatrix());
+    m_MainShader->SetMat4("projection", m_Camera->GetProjectionMatrix(aspect));
+
+    // 3. Draw Floor Plane
+    m_MainShader->SetVec3("objectColor", glm::vec3(0.2f, 0.2f, 0.2f));
+    m_MainShader->SetMat4("model", glm::mat4(1.0f));
+    m_PlaneMesh->Draw();
+
+    // 4. Draw All Cubes in Scene
+    m_MainShader->SetVec3("objectColor", glm::vec3(1.0f, 0.5f, 0.2f));
+    for (auto& obj : m_ActiveScene->GetRoot()->children) {
+        m_MainShader->SetMat4("model", obj->GetWorldMatrix());
+        m_CubeMesh->Draw();
+    }
 }
 
 void Application::CleanupDeletedObjects(GameObject* node) {

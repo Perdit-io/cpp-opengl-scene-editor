@@ -22,6 +22,7 @@ private:
     void DrawUI();
     void DrawSceneHierarchy(GameObject* node);
     void DrawInspector();
+    void RenderScene();
     void CleanupDeletedObjects(GameObject* node);
 
     GLFWwindow* m_Window;
