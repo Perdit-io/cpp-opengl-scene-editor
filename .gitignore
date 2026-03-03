@@ -13,3 +13,4 @@ obj/
 # Zed IDE LSP helper
 .zed/
 .cache/
+compile_commands.json
