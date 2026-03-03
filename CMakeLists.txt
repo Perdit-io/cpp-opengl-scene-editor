@@ -39,6 +39,7 @@ add_executable(SceneEditor
     src/Scene.cpp
     src/Shader.cpp
     src/Mesh.cpp
+    src/Camera.cpp
 )
 target_include_directories(SceneEditor PRIVATE
     "${CMAKE_SOURCE_DIR}/src"

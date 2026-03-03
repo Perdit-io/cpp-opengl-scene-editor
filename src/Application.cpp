@@ -4,6 +4,7 @@
 #include "Scene.h"
 #include "Shader.h"
 #include "Mesh.h"
+#include "Camera.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -48,6 +49,8 @@ Application::Application(const char* title, int width, int height) {
     m_ActiveScene->CreateGameObject("Cube 1")->transform.position = glm::vec3( 0.0f, 0.9f, 0.0f);
     m_ActiveScene->CreateGameObject("Cube 2")->transform.position = glm::vec3(-1.5f, 2.0f, 0.0f);
     m_ActiveScene->CreateGameObject("Cube 3")->transform.position = glm::vec3(-1.5f, 3.0f, -2.0f);
+
+    m_Camera = std::make_unique<Camera>(glm::vec3(0.0f, 1.0f, 8.0f));
 }
 
 Application::~Application() {
@@ -118,8 +121,8 @@ void Application::Run() {
         glfwGetFramebufferSize(m_Window, &display_w, &display_h);
         float aspect = (float)display_w / (float)display_h;
 
-        glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -1.0f, -8.0f));
-        glm::mat4 projection = glm::perspective(glm::radians(45.0f), aspect, 0.1f, 100.0f);
+        glm::mat4 view = m_Camera->GetViewMatrix();
+        glm::mat4 projection = m_Camera->GetProjectionMatrix(aspect);
 
         m_MainShader->SetMat4("view", view);
         m_MainShader->SetMat4("projection", projection);

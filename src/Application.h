@@ -7,6 +7,7 @@ class Scene;
 class Shader;
 class Mesh;
 class GameObject;
+class Camera;
 
 class Application {
 public:
@@ -29,4 +30,5 @@ private:
     std::unique_ptr<Mesh> m_CubeMesh;
     std::unique_ptr<Mesh> m_PlaneMesh;
     GameObject* m_SelectedGameObject = nullptr;
+    std::unique_ptr<Camera> m_Camera;
 };
