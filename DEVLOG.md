@@ -1,5 +1,8 @@
 # Development Log - Scene Editor
 
+## Milestone 8.5: Architecture Polish & Refactoring
+**Goal:** Consolidate matrix math, abstract the camera system, and isolate rendering logic to prepare for complex input handling.
+
 ## Milestone 8: Editor UI & Object Management
 **Goal:** Implement a functional scene editor interface with a hierarchy outliner, property inspector, and safe object lifecycle management (Spawn/Delete).
 
