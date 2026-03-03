@@ -1,5 +1,8 @@
 # Development Log - Scene Editor
 
+## Milestone 9: Undo/Redo (The Command Pattern)
+**Goal:** Implement a robust history system using the Command Pattern to manage object lifecycle (Create/Delete) and property modifications (Transform).
+
 ## Milestone 8.5: Architecture Polish & Refactoring
 **Goal:** Consolidate matrix math, abstract the camera system, and isolate rendering logic to prepare for complex input handling.
 

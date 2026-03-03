@@ -5,6 +5,10 @@
 #include "Shader.h"
 #include "Mesh.h"
 #include "Camera.h"
+#include "Command.h"
+#include "CreateCommand.h"
+#include "TransformCommand.h"
+#include "DeleteCommand.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -103,6 +107,8 @@ void Application::Run() {
 
         glfwPollEvents();
 
+        Update((float)deltaTime);
+
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
@@ -115,7 +121,6 @@ void Application::Run() {
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
         glfwSwapBuffers(m_Window);
-        CleanupDeletedObjects(m_ActiveScene->GetRoot());
     }
 }
 
@@ -127,7 +132,30 @@ void Application::Cleanup() {
     glfwTerminate();
 }
 
+void Application::Update(float deltaTime) {
+    if (ImGui::GetIO().KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_Z, false)) {
+        Undo();
+    }
+
+    if (ImGui::GetIO().KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_Y, false)) {
+        Redo();
+    }
+}
+
 void Application::DrawUI() {
+    if (ImGui::BeginMainMenuBar()) {
+        if (ImGui::BeginMenu("Edit")) {
+            if (ImGui::MenuItem("Undo", "Ctrl+Z", false, !m_UndoStack.empty())) {
+                Undo();
+            }
+            if (ImGui::MenuItem("Redo", "Ctrl+Y", false, !m_RedoStack.empty())) {
+                Redo();
+            }
+            ImGui::EndMenu();
+        }
+        ImGui::EndMainMenuBar();
+    }
+
     ImGui::Begin("World Outliner");
     for (auto child : m_ActiveScene->GetRoot()->children) {
         DrawSceneHierarchy(child);
@@ -136,8 +164,10 @@ void Application::DrawUI() {
     ImGui::Separator();
     static int cubeCount = 0;
     if (ImGui::Button("Add Cube")) {
-        std::string name = "Cube " + std::to_string(++cubeCount);
-        m_ActiveScene->CreateGameObject(name);
+        std::string name = "New Cube (" + std::to_string(++cubeCount) + ")";
+
+        auto cmd = std::make_unique<CreateCommand>(m_ActiveScene.get(), name);
+        PushCommand(std::move(cmd));
     }
     ImGui::End();
 
@@ -165,7 +195,11 @@ void Application::DrawSceneHierarchy(GameObject* node) {
 
     if (node->parent != nullptr && ImGui::BeginPopupContextItem()) {
         if (ImGui::MenuItem("Delete Object")) {
-            node->markedForDeletion = true; // Just mark it!
+            auto cmd = std::make_unique<DeleteCommand>(m_ActiveScene.get(), node);
+
+            if (m_SelectedGameObject == node) m_SelectedGameObject = nullptr;
+
+            PushCommand(std::move(cmd));
         }
         ImGui::EndPopup();
     }
@@ -184,15 +218,43 @@ void Application::DrawInspector() {
         ImGui::Text("Name: %s", m_SelectedGameObject->name.c_str());
         ImGui::Separator();
 
-        ImGui::DragFloat3("Position", glm::value_ptr(m_SelectedGameObject->transform.position), 0.1f);
-        ImGui::DragFloat3("Rotation", glm::value_ptr(m_SelectedGameObject->transform.rotation), 1.0f);
-        ImGui::DragFloat3("Scale", glm::value_ptr(m_SelectedGameObject->transform.scale), 0.1f);
+        static Transform transformBeforeEdit;
+        auto& currentTransform = m_SelectedGameObject->transform;
+
+        auto DrawUndoableDrag = [&](const char* label, glm::vec3& data, float speed) {
+            ImGui::DragFloat3(label, glm::value_ptr(data), speed);
+
+            if (ImGui::IsItemActivated()) {
+                transformBeforeEdit = currentTransform;
+            }
+
+            if (ImGui::IsItemDeactivatedAfterEdit()) {
+                PushCommand(std::make_unique<TransformCommand>(
+                    m_SelectedGameObject,
+                    transformBeforeEdit,
+                    currentTransform
+                ));
+            }
+        };
+
+        DrawUndoableDrag("Position", currentTransform.position, 0.1f);
+        DrawUndoableDrag("Rotation", currentTransform.rotation, 1.0f);
+        DrawUndoableDrag("Scale", currentTransform.scale, 0.1f);
 
         ImGui::Separator();
+
         if (ImGui::Button("Reset Transform")) {
-            m_SelectedGameObject->transform.position = glm::vec3(0.0f);
-            m_SelectedGameObject->transform.rotation = glm::vec3(0.0f);
-            m_SelectedGameObject->transform.scale = glm::vec3(1.0f);
+            Transform oldTransform = currentTransform;
+
+            currentTransform.position = glm::vec3(0.0f);
+            currentTransform.rotation = glm::vec3(0.0f);
+            currentTransform.scale = glm::vec3(1.0f);
+
+            PushCommand(std::make_unique<TransformCommand>(
+                m_SelectedGameObject,
+                oldTransform,
+                currentTransform
+            ));
         }
     } else {
         ImGui::Text("Select an object to edit.");
@@ -230,18 +292,33 @@ void Application::RenderScene() {
     }
 }
 
-void Application::CleanupDeletedObjects(GameObject* node) {
-    for (int i = 0; i < node->children.size(); ++i) {
-        GameObject* child = node->children[i];
+void Application::PushCommand(std::unique_ptr<Command> cmd) {
+    cmd->Execute();
 
-        if (child->markedForDeletion) {
-            if (m_SelectedGameObject == child) m_SelectedGameObject = nullptr;
+    m_UndoStack.push_back(std::move(cmd));
+    m_RedoStack.clear();
 
-            m_ActiveScene->DestroyGameObject(child);
-
-            --i;
-        } else {
-            CleanupDeletedObjects(child);
-        }
+    if (m_UndoStack.size() > MAX_UNDO_STEPS) {
+        m_UndoStack.pop_front();
     }
+}
+
+void Application::Undo() {
+    if (m_UndoStack.empty()) return;
+
+    auto cmd = std::move(m_UndoStack.back());
+    m_UndoStack.pop_back();
+
+    cmd->Undo();
+    m_RedoStack.push_back(std::move(cmd));
+}
+
+void Application::Redo() {
+    if (m_RedoStack.empty()) return;
+
+    auto cmd = std::move(m_RedoStack.back());
+    m_RedoStack.pop_back();
+
+    cmd->Execute();
+    m_UndoStack.push_back(std::move(cmd));
 }

@@ -31,3 +31,32 @@ void Scene::DestroyGameObject(GameObject* obj) {
         m_GameObjects.end()
     );
 }
+
+std::unique_ptr<GameObject> Scene::ExtractGameObject(GameObject* obj) {
+    if (!obj || obj == m_Root.get()) return nullptr;
+
+    if (obj->parent) {
+        auto& siblings = obj->parent->children;
+        siblings.erase(std::remove(siblings.begin(), siblings.end(), obj), siblings.end());
+
+        obj->parent = nullptr;
+    }
+
+    for (auto it = m_GameObjects.begin(); it != m_GameObjects.end(); ++it) {
+        if (it->get() == obj) {
+            std::unique_ptr<GameObject> extracted = std::move(*it);
+            m_GameObjects.erase(it);
+            return extracted;
+        }
+    }
+    return nullptr;
+}
+
+void Scene::ReinsertGameObject(std::unique_ptr<GameObject> obj) {
+    if (!obj) return;
+
+    GameObject* rawPtr = obj.get();
+    m_Root->AddChild(rawPtr);
+
+    m_GameObjects.push_back(std::move(obj));
+}

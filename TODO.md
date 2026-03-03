@@ -9,7 +9,7 @@
 - [x] World outliner (Scene UI list)
 - [x] Parenting (Transform hierarchy)
 - [x] Object states (Spawn/Delete/Toggle)
-- [ ] Undo/Redo (Min. 5 actions)
+- [x] Undo/Redo (Min. 5 actions)
 - [ ] Play/Edit Mode toggle
 
 ## Test Cases
