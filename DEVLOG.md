@@ -1,5 +1,8 @@
 # Development Log - Scene Editor
 
+## Milestone 8: Editor UI & Object Management
+**Goal:** Implement a functional scene editor interface with a hierarchy outliner, property inspector, and safe object lifecycle management (Spawn/Delete).
+
 ## Milestone 7: Basic Lighting (Lambertian Shading)
 **Goal:** Implement vertex normals and a basic lighting model (ambient + diffuse) to provide 3D depth and visual volume.
 

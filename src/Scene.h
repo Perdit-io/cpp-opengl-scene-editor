@@ -9,10 +9,10 @@ class GameObject;
 class Scene {
 public:
     Scene();
-    ~Scene();
+    ~Scene() = default;
 
     GameObject* CreateGameObject(const std::string& name = "New Object");
-    void Clear();
+    void DestroyGameObject(GameObject* obj);
 
     GameObject* GetRoot() const { return m_Root.get(); }
 private:

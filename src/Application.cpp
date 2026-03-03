@@ -11,23 +11,23 @@
 namespace {
     std::vector<Vertex> cubeVertices = {
         // Back face
-        {{-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}}, {{ 0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}}, {{ 0.5f,  0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}},
-        {{ 0.5f,  0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}}, {{-0.5f,  0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}}, {{-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}},
+        {{-0.5f, -0.5f, -0.5f}, { 0.0f,  0.0f, -1.0f}}, {{ 0.5f, -0.5f, -0.5f}, { 0.0f,  0.0f, -1.0f}}, {{ 0.5f,  0.5f, -0.5f}, { 0.0f,  0.0f, -1.0f}},
+        {{ 0.5f,  0.5f, -0.5f}, { 0.0f,  0.0f, -1.0f}}, {{-0.5f,  0.5f, -0.5f}, { 0.0f,  0.0f, -1.0f}}, {{-0.5f, -0.5f, -0.5f}, { 0.0f,  0.0f, -1.0f}},
         // Front face
-        {{-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}}, {{ 0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}}, {{ 0.5f,  0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}},
-        {{ 0.5f,  0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}}, {{-0.5f,  0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}}, {{-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}},
+        {{-0.5f, -0.5f,  0.5f}, { 0.0f,  0.0f,  1.0f}}, {{ 0.5f, -0.5f,  0.5f}, { 0.0f,  0.0f,  1.0f}}, {{ 0.5f,  0.5f,  0.5f}, { 0.0f,  0.0f,  1.0f}},
+        {{ 0.5f,  0.5f,  0.5f}, { 0.0f,  0.0f,  1.0f}}, {{-0.5f,  0.5f,  0.5f}, { 0.0f,  0.0f,  1.0f}}, {{-0.5f, -0.5f,  0.5f}, { 0.0f,  0.0f,  1.0f}},
         // Left face
-        {{-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}}, {{ 0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}}, {{ 0.5f,  0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}},
-        {{ 0.5f,  0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}}, {{-0.5f,  0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}}, {{-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}},
+        {{-0.5f,  0.5f,  0.5f}, {-1.0f,  0.0f,  0.0f}}, {{-0.5f,  0.5f, -0.5f}, {-1.0f,  0.0f,  0.0f}}, {{-0.5f, -0.5f, -0.5f}, {-1.0f,  0.0f,  0.0f}},
+        {{-0.5f, -0.5f, -0.5f}, {-1.0f,  0.0f,  0.0f}}, {{-0.5f, -0.5f,  0.5f}, {-1.0f,  0.0f,  0.0f}}, {{-0.5f,  0.5f,  0.5f}, {-1.0f,  0.0f,  0.0f}},
         // Right face
-        {{-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}}, {{ 0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}}, {{ 0.5f,  0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}},
-        {{ 0.5f,  0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}}, {{-0.5f,  0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}}, {{-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}},
+        {{ 0.5f,  0.5f,  0.5f}, { 1.0f,  0.0f,  0.0f}}, {{ 0.5f,  0.5f, -0.5f}, { 1.0f,  0.0f,  0.0f}}, {{ 0.5f, -0.5f, -0.5f}, { 1.0f,  0.0f,  0.0f}},
+        {{ 0.5f, -0.5f, -0.5f}, { 1.0f,  0.0f,  0.0f}}, {{ 0.5f, -0.5f,  0.5f}, { 1.0f,  0.0f,  0.0f}}, {{ 0.5f,  0.5f,  0.5f}, { 1.0f,  0.0f,  0.0f}},
         // Bottom face
-        {{-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}}, {{ 0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}}, {{ 0.5f,  0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}},
-        {{ 0.5f,  0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}}, {{-0.5f,  0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}}, {{-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}},
+        {{-0.5f, -0.5f, -0.5f}, { 0.0f, -1.0f,  0.0f}}, {{ 0.5f, -0.5f, -0.5f}, { 0.0f, -1.0f,  0.0f}}, {{ 0.5f, -0.5f,  0.5f}, { 0.0f, -1.0f,  0.0f}},
+        {{ 0.5f, -0.5f,  0.5f}, { 0.0f, -1.0f,  0.0f}}, {{-0.5f, -0.5f,  0.5f}, { 0.0f, -1.0f,  0.0f}}, {{-0.5f, -0.5f, -0.5f}, { 0.0f, -1.0f,  0.0f}},
         // Top face
-        {{-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}}, {{ 0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}}, {{ 0.5f,  0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}},
-        {{ 0.5f,  0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}}, {{-0.5f,  0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}}, {{-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}}
+        {{-0.5f,  0.5f, -0.5f}, { 0.0f,  1.0f,  0.0f}}, {{ 0.5f,  0.5f, -0.5f}, { 0.0f,  1.0f,  0.0f}}, {{ 0.5f,  0.5f,  0.5f}, { 0.0f,  1.0f,  0.0f}},
+        {{ 0.5f,  0.5f,  0.5f}, { 0.0f,  1.0f,  0.0f}}, {{-0.5f,  0.5f,  0.5f}, { 0.0f,  1.0f,  0.0f}}, {{-0.5f,  0.5f, -0.5f}, { 0.0f,  1.0f,  0.0f}}
     };
 
     std::vector<Vertex> planeVertices = {
@@ -48,7 +48,6 @@ Application::Application(const char* title, int width, int height) {
     m_ActiveScene->CreateGameObject("Cube 1")->transform.position = glm::vec3( 0.0f, 0.9f, 0.0f);
     m_ActiveScene->CreateGameObject("Cube 2")->transform.position = glm::vec3(-1.5f, 2.0f, 0.0f);
     m_ActiveScene->CreateGameObject("Cube 3")->transform.position = glm::vec3(-1.5f, 3.0f, -2.0f);
-    m_ActiveScene->CreateGameObject("Floor");
 }
 
 Application::~Application() {
@@ -96,28 +95,22 @@ void Application::Run() {
         double currentTime = glfwGetTime();
         double deltaTime = currentTime - lastTime;
 
-        // Frame rate limiter
         if (deltaTime < targetFrameTime) continue;
         lastTime = currentTime;
 
         glfwPollEvents();
 
-        // Start ImGui
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        ImGui::Begin("Status");
-        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-        ImGui::End();
+        DrawUI();
 
-        // Clear buffers
         glClearColor(0.15f, 0.15f, 0.15f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // --- RENDER START ---
         m_MainShader->Use();
-
         m_MainShader->SetVec3("lightPos", glm::vec3(1.5f, 5.0f, 3.0f));
         m_MainShader->SetVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
 
@@ -145,6 +138,8 @@ void Application::Run() {
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         glfwSwapBuffers(m_Window);
+
+        CleanupDeletedObjects(m_ActiveScene->GetRoot());
     }
 }
 
@@ -154,4 +149,93 @@ void Application::Cleanup() {
     ImGui::DestroyContext();
     glfwDestroyWindow(m_Window);
     glfwTerminate();
+}
+
+void Application::DrawUI() {
+    ImGui::Begin("World Outliner");
+    for (auto child : m_ActiveScene->GetRoot()->children) {
+        DrawSceneHierarchy(child);
+    }
+
+    ImGui::Separator();
+    static int cubeCount = 0;
+    if (ImGui::Button("Add Cube")) {
+        std::string name = "Cube " + std::to_string(++cubeCount);
+        m_ActiveScene->CreateGameObject(name);
+    }
+    ImGui::End();
+
+    DrawInspector();
+
+    ImGui::Begin("Status");
+    ImGui::Text("Application average %.3f ms/frame (%.1f FPS)",
+                 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+    ImGui::End();
+}
+
+void Application::DrawSceneHierarchy(GameObject* node) {
+    ImGuiTreeNodeFlags flags = ((m_SelectedGameObject == node) ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow;
+    flags |= ImGuiTreeNodeFlags_SpanAvailWidth;
+
+    bool node_open = false;
+    if (node->children.empty()) {
+        flags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
+        ImGui::TreeNodeEx((void*)(intptr_t)node, flags, "%s", node->name.c_str());
+    } else {
+        node_open = ImGui::TreeNodeEx((void*)(intptr_t)node, flags, "%s", node->name.c_str());
+    }
+
+    if (ImGui::IsItemClicked()) m_SelectedGameObject = node;
+
+    if (node->parent != nullptr && ImGui::BeginPopupContextItem()) {
+        if (ImGui::MenuItem("Delete Object")) {
+            node->markedForDeletion = true; // Just mark it!
+        }
+        ImGui::EndPopup();
+    }
+
+    if (node_open) {
+        for (auto child : node->children) {
+            DrawSceneHierarchy(child);
+        }
+        ImGui::TreePop();
+    }
+}
+
+void Application::DrawInspector() {
+    ImGui::Begin("Inspector");
+    if (m_SelectedGameObject) {
+        ImGui::Text("Name: %s", m_SelectedGameObject->name.c_str());
+        ImGui::Separator();
+
+        ImGui::DragFloat3("Position", glm::value_ptr(m_SelectedGameObject->transform.position), 0.1f);
+        ImGui::DragFloat3("Rotation", glm::value_ptr(m_SelectedGameObject->transform.rotation), 1.0f);
+        ImGui::DragFloat3("Scale", glm::value_ptr(m_SelectedGameObject->transform.scale), 0.1f);
+
+        ImGui::Separator();
+        if (ImGui::Button("Reset Transform")) {
+            m_SelectedGameObject->transform.position = glm::vec3(0.0f);
+            m_SelectedGameObject->transform.rotation = glm::vec3(0.0f);
+            m_SelectedGameObject->transform.scale = glm::vec3(1.0f);
+        }
+    } else {
+        ImGui::Text("Select an object to edit.");
+    }
+    ImGui::End();
+}
+
+void Application::CleanupDeletedObjects(GameObject* node) {
+    for (int i = 0; i < node->children.size(); ++i) {
+        GameObject* child = node->children[i];
+
+        if (child->markedForDeletion) {
+            if (m_SelectedGameObject == child) m_SelectedGameObject = nullptr;
+
+            m_ActiveScene->DestroyGameObject(child);
+
+            --i;
+        } else {
+            CleanupDeletedObjects(child);
+        }
+    }
 }

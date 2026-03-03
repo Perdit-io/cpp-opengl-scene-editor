@@ -9,6 +9,7 @@ class GameObject {
 public:
     std::string name = "Object";
     Transform transform;
+    bool markedForDeletion = false;
 
     GameObject* parent = nullptr;
     std::vector<GameObject*> children;

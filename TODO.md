@@ -6,13 +6,13 @@
 - [ ] Static mesh (OBJ loading)
 - [ ] Textures (PNG/JPG support)
 - [x] Object transforms (TRS matrices)
-- [ ] World outliner (Scene UI list)
+- [x] World outliner (Scene UI list)
 - [x] Parenting (Transform hierarchy)
-- [ ] Object states (Spawn/Delete/Toggle)
+- [x] Object states (Spawn/Delete/Toggle)
 - [ ] Undo/Redo (Min. 5 actions)
 - [ ] Play/Edit Mode toggle
 
 ## Test Cases
-- [ ] 1. Replicate 3-Cube Scene (Exact Transforms)
+- [x] 1. Replicate 3-Cube Scene (Exact Transforms)
 - [ ] 2. Assemble Primitive Table (10x1.5x5)
 - [ ] 3. Load Sponza Scene & Navigate
