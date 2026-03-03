@@ -1,5 +1,8 @@
 # Development Log - Scene Editor
 
+## Milestone 11: Editor Navigation (Fly-Camera)
+**Goal:** Implement a 3D flying camera system with WASD movement and mouse-look to allow for spatial inspection and object alignment.
+
 ## Milestone 10: Primitive Factory & Property System
 **Goal:** Abstract mesh generation via `PrimitiveGenerator` and implement Sphere/Plane primitives with a robust, undoable property system for colors and transforms.
 

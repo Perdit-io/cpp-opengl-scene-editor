@@ -43,4 +43,5 @@ private:
     void PushCommand(std::unique_ptr<Command> cmd);
     void Undo();
     void Redo();
+    void HandleInput(float deltaTime);
 };

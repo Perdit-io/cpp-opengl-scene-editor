@@ -1,7 +1,7 @@
 # Requirements Checklist
 
 ## Core Features
-- [ ] Input system (WASD + Mouse)
+- [x] Input system (WASD + Mouse)
 - [x] Primitives (Cube, Plane, Sphere)
 - [ ] Static mesh (OBJ loading)
 - [ ] Textures (PNG/JPG support)

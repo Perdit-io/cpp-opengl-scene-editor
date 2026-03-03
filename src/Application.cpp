@@ -123,12 +123,48 @@ void Application::Cleanup() {
 }
 
 void Application::Update(float deltaTime) {
+    HandleInput(deltaTime);
     if (ImGui::GetIO().KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_Z, false)) {
         Undo();
     }
 
     if (ImGui::GetIO().KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_Y, false)) {
         Redo();
+    }
+}
+
+void Application::HandleInput(float deltaTime) {
+    static bool firstMouse = true;
+    static float lastX = 0.0f, lastY = 0.0f;
+
+    if (glfwGetMouseButton(m_Window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {
+        glfwSetInputMode(m_Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+        // Keyboard
+        if (glfwGetKey(m_Window, GLFW_KEY_W) == GLFW_PRESS) m_Camera->ProcessKeyboard(0, deltaTime);
+        if (glfwGetKey(m_Window, GLFW_KEY_S) == GLFW_PRESS) m_Camera->ProcessKeyboard(1, deltaTime);
+        if (glfwGetKey(m_Window, GLFW_KEY_A) == GLFW_PRESS) m_Camera->ProcessKeyboard(2, deltaTime);
+        if (glfwGetKey(m_Window, GLFW_KEY_D) == GLFW_PRESS) m_Camera->ProcessKeyboard(3, deltaTime);
+
+        // Mouse
+        double xpos, ypos;
+        glfwGetCursorPos(m_Window, &xpos, &ypos);
+
+        if (firstMouse) {
+            lastX = (float)xpos;
+            lastY = (float)ypos;
+            firstMouse = false;
+        }
+
+        float xoffset = (float)xpos - lastX;
+        float yoffset = lastY - (float)ypos; // Reversed since y-coords range from bottom to top
+        lastX = (float)xpos;
+        lastY = (float)ypos;
+
+        m_Camera->ProcessMouse(xoffset, yoffset);
+    } else {
+        glfwSetInputMode(m_Window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+        firstMouse = true; // Reset so it doesn't jump when we re-click
     }
 }
 
