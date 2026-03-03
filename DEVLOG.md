@@ -1,5 +1,8 @@
 # Development Log - Scene Editor
 
+## Milestone 10: Primitive Factory & Property System
+**Goal:** Abstract mesh generation via `PrimitiveGenerator` and implement Sphere/Plane primitives with a robust, undoable property system for colors and transforms.
+
 ## Milestone 9: Undo/Redo (The Command Pattern)
 **Goal:** Implement a robust history system using the Command Pattern to manage object lifecycle (Create/Delete) and property modifications (Transform).
 

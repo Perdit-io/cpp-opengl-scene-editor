@@ -9,37 +9,10 @@
 #include "CreateCommand.h"
 #include "TransformCommand.h"
 #include "DeleteCommand.h"
+#include "PrimitiveGenerator.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-
-namespace {
-    std::vector<Vertex> cubeVertices = {
-        // Back face
-        {{-0.5f, -0.5f, -0.5f}, { 0.0f,  0.0f, -1.0f}}, {{ 0.5f, -0.5f, -0.5f}, { 0.0f,  0.0f, -1.0f}}, {{ 0.5f,  0.5f, -0.5f}, { 0.0f,  0.0f, -1.0f}},
-        {{ 0.5f,  0.5f, -0.5f}, { 0.0f,  0.0f, -1.0f}}, {{-0.5f,  0.5f, -0.5f}, { 0.0f,  0.0f, -1.0f}}, {{-0.5f, -0.5f, -0.5f}, { 0.0f,  0.0f, -1.0f}},
-        // Front face
-        {{-0.5f, -0.5f,  0.5f}, { 0.0f,  0.0f,  1.0f}}, {{ 0.5f, -0.5f,  0.5f}, { 0.0f,  0.0f,  1.0f}}, {{ 0.5f,  0.5f,  0.5f}, { 0.0f,  0.0f,  1.0f}},
-        {{ 0.5f,  0.5f,  0.5f}, { 0.0f,  0.0f,  1.0f}}, {{-0.5f,  0.5f,  0.5f}, { 0.0f,  0.0f,  1.0f}}, {{-0.5f, -0.5f,  0.5f}, { 0.0f,  0.0f,  1.0f}},
-        // Left face
-        {{-0.5f,  0.5f,  0.5f}, {-1.0f,  0.0f,  0.0f}}, {{-0.5f,  0.5f, -0.5f}, {-1.0f,  0.0f,  0.0f}}, {{-0.5f, -0.5f, -0.5f}, {-1.0f,  0.0f,  0.0f}},
-        {{-0.5f, -0.5f, -0.5f}, {-1.0f,  0.0f,  0.0f}}, {{-0.5f, -0.5f,  0.5f}, {-1.0f,  0.0f,  0.0f}}, {{-0.5f,  0.5f,  0.5f}, {-1.0f,  0.0f,  0.0f}},
-        // Right face
-        {{ 0.5f,  0.5f,  0.5f}, { 1.0f,  0.0f,  0.0f}}, {{ 0.5f,  0.5f, -0.5f}, { 1.0f,  0.0f,  0.0f}}, {{ 0.5f, -0.5f, -0.5f}, { 1.0f,  0.0f,  0.0f}},
-        {{ 0.5f, -0.5f, -0.5f}, { 1.0f,  0.0f,  0.0f}}, {{ 0.5f, -0.5f,  0.5f}, { 1.0f,  0.0f,  0.0f}}, {{ 0.5f,  0.5f,  0.5f}, { 1.0f,  0.0f,  0.0f}},
-        // Bottom face
-        {{-0.5f, -0.5f, -0.5f}, { 0.0f, -1.0f,  0.0f}}, {{ 0.5f, -0.5f, -0.5f}, { 0.0f, -1.0f,  0.0f}}, {{ 0.5f, -0.5f,  0.5f}, { 0.0f, -1.0f,  0.0f}},
-        {{ 0.5f, -0.5f,  0.5f}, { 0.0f, -1.0f,  0.0f}}, {{-0.5f, -0.5f,  0.5f}, { 0.0f, -1.0f,  0.0f}}, {{-0.5f, -0.5f, -0.5f}, { 0.0f, -1.0f,  0.0f}},
-        // Top face
-        {{-0.5f,  0.5f, -0.5f}, { 0.0f,  1.0f,  0.0f}}, {{ 0.5f,  0.5f, -0.5f}, { 0.0f,  1.0f,  0.0f}}, {{ 0.5f,  0.5f,  0.5f}, { 0.0f,  1.0f,  0.0f}},
-        {{ 0.5f,  0.5f,  0.5f}, { 0.0f,  1.0f,  0.0f}}, {{-0.5f,  0.5f,  0.5f}, { 0.0f,  1.0f,  0.0f}}, {{-0.5f,  0.5f, -0.5f}, { 0.0f,  1.0f,  0.0f}}
-    };
-
-    std::vector<Vertex> planeVertices = {
-        {{-10.0f, -0.5f, -10.0f}, {0.0f, 1.0f, 0.0f}}, {{ 10.0f, -0.5f, -10.0f}, {0.0f, 1.0f, 0.0f}}, {{ 10.0f, -0.5f,  10.0f}, {0.0f, 1.0f, 0.0f}},
-        {{ 10.0f, -0.5f,  10.0f}, {0.0f, 1.0f, 0.0f}}, {{-10.0f, -0.5f,  10.0f}, {0.0f, 1.0f, 0.0f}}, {{-10.0f, -0.5f, -10.0f}, {0.0f, 1.0f, 0.0f}}
-    };
-}
 
 Application::Application(const char* title, int width, int height) {
     if (!InitWindow(title, width, height)) return;
@@ -47,12 +20,29 @@ Application::Application(const char* title, int width, int height) {
 
     m_ActiveScene = std::make_unique<Scene>();
     m_MainShader = std::make_unique<Shader>("shaders/default.vert", "shaders/default.frag");
-    m_CubeMesh = std::make_unique<Mesh>(cubeVertices);
-    m_PlaneMesh = std::make_unique<Mesh>(planeVertices);
 
-    m_ActiveScene->CreateGameObject("Cube 1")->transform.position = glm::vec3( 0.0f, 0.9f, 0.0f);
-    m_ActiveScene->CreateGameObject("Cube 2")->transform.position = glm::vec3(-1.5f, 2.0f, 0.0f);
-    m_ActiveScene->CreateGameObject("Cube 3")->transform.position = glm::vec3(-1.5f, 3.0f, -2.0f);
+    // 1. Initialize Primitives
+    m_CubeMesh   = std::make_unique<Mesh>(PrimitiveGenerator::GenerateCube());
+    m_PlaneMesh  = std::make_unique<Mesh>(PrimitiveGenerator::GeneratePlane(20.0f));
+    m_SphereMesh = std::make_unique<Mesh>(PrimitiveGenerator::GenerateSphere(1.0f, 32, 16));
+
+    // 2. Setup initial scene (Test Case 1)
+    auto floor = m_ActiveScene->CreateGameObject("Ground Plane");
+    floor->mesh = m_PlaneMesh.get();
+    floor->color = glm::vec3(0.2f, 0.2f, 0.2f);
+    floor->transform.position = glm::vec3(0.0f, 0.0f, 0.0f);
+
+    auto c1 = m_ActiveScene->CreateGameObject("Cube 1");
+    c1->transform.position = glm::vec3(0.0f, 0.9f, 0.0f);
+    c1->mesh = m_CubeMesh.get();
+
+    auto c2 = m_ActiveScene->CreateGameObject("Cube 2");
+    c2->transform.position = glm::vec3(-1.5f, 2.0f, 0.0f);
+    c2->mesh = m_CubeMesh.get();
+
+    auto c3 = m_ActiveScene->CreateGameObject("Cube 3");
+    c3->transform.position = glm::vec3(-1.5f, 3.0f, -2.0f);
+    c3->mesh = m_CubeMesh.get();
 
     m_Camera = std::make_unique<Camera>(glm::vec3(0.0f, 1.0f, 8.0f));
 }
@@ -162,15 +152,32 @@ void Application::DrawUI() {
     }
 
     ImGui::Separator();
-    static int cubeCount = 0;
-    if (ImGui::Button("Add Cube")) {
-        std::string name = "New Cube (" + std::to_string(++cubeCount) + ")";
 
-        auto cmd = std::make_unique<CreateCommand>(m_ActiveScene.get(), name);
-        PushCommand(std::move(cmd));
+    if (ImGui::Button("Spawn Object...")) {
+        ImGui::OpenPopup("spawn_popup");
     }
+
+    if (ImGui::BeginPopup("spawn_popup")) {
+        static int spawnCount = 0;
+
+        auto Spawn = [&](const std::string& type, Mesh* meshPtr) {
+            std::string name = type + " (" + std::to_string(++spawnCount) + ")";
+
+            // The command now takes the mesh as a parameter
+            auto cmd = std::make_unique<CreateCommand>(m_ActiveScene.get(), name, meshPtr);
+            PushCommand(std::move(cmd));
+        };
+
+        if (ImGui::MenuItem("Cube"))   Spawn("Cube", m_CubeMesh.get());
+        if (ImGui::MenuItem("Sphere")) Spawn("Sphere", m_SphereMesh.get());
+        if (ImGui::MenuItem("Plane"))  Spawn("Plane", m_PlaneMesh.get());
+
+        ImGui::EndPopup();
+    }
+
     ImGui::End();
 
+    // --- 3. Inspector & Status ---
     DrawInspector();
 
     ImGui::Begin("Status");
@@ -219,41 +226,61 @@ void Application::DrawInspector() {
         ImGui::Separator();
 
         static Transform transformBeforeEdit;
-        auto& currentTransform = m_SelectedGameObject->transform;
+        static glm::vec3 colorBeforeEdit;
+        static bool isEditingColor = false;
 
         auto DrawUndoableDrag = [&](const char* label, glm::vec3& data, float speed) {
             ImGui::DragFloat3(label, glm::value_ptr(data), speed);
-
             if (ImGui::IsItemActivated()) {
-                transformBeforeEdit = currentTransform;
+                transformBeforeEdit = m_SelectedGameObject->transform;
+                colorBeforeEdit = m_SelectedGameObject->color;
             }
-
             if (ImGui::IsItemDeactivatedAfterEdit()) {
                 PushCommand(std::make_unique<TransformCommand>(
                     m_SelectedGameObject,
-                    transformBeforeEdit,
-                    currentTransform
+                    transformBeforeEdit, m_SelectedGameObject->transform,
+                    colorBeforeEdit, m_SelectedGameObject->color
                 ));
             }
         };
 
-        DrawUndoableDrag("Position", currentTransform.position, 0.1f);
-        DrawUndoableDrag("Rotation", currentTransform.rotation, 1.0f);
-        DrawUndoableDrag("Scale", currentTransform.scale, 0.1f);
+        DrawUndoableDrag("Position", m_SelectedGameObject->transform.position, 0.1f);
+        DrawUndoableDrag("Rotation", m_SelectedGameObject->transform.rotation, 1.0f);
+        DrawUndoableDrag("Scale", m_SelectedGameObject->transform.scale, 0.1f);
+
+        ImGui::ColorEdit3("Object Color", &m_SelectedGameObject->color.x);
+
+        if (ImGui::IsItemActive() && !isEditingColor) {
+            transformBeforeEdit = m_SelectedGameObject->transform;
+            colorBeforeEdit = m_SelectedGameObject->color;
+            isEditingColor = true;
+        }
+
+        if (isEditingColor && !ImGui::IsItemActive() && !ImGui::IsPopupOpen(nullptr, ImGuiPopupFlags_AnyPopupId)) {
+            if (colorBeforeEdit != m_SelectedGameObject->color) {
+                PushCommand(std::make_unique<TransformCommand>(
+                    m_SelectedGameObject,
+                    transformBeforeEdit, m_SelectedGameObject->transform,
+                    colorBeforeEdit, m_SelectedGameObject->color
+                ));
+            }
+            isEditingColor = false;
+        }
 
         ImGui::Separator();
 
-        if (ImGui::Button("Reset Transform")) {
-            Transform oldTransform = currentTransform;
+        if (ImGui::Button("Reset Properties")) {
+            Transform oldT = m_SelectedGameObject->transform;
+            glm::vec3 oldC = m_SelectedGameObject->color;
 
-            currentTransform.position = glm::vec3(0.0f);
-            currentTransform.rotation = glm::vec3(0.0f);
-            currentTransform.scale = glm::vec3(1.0f);
+            Transform newT;
+            glm::vec3 newC = glm::vec3(1.0f, 0.5f, 0.2f);
+
+            m_SelectedGameObject->transform = newT;
+            m_SelectedGameObject->color = newC;
 
             PushCommand(std::make_unique<TransformCommand>(
-                m_SelectedGameObject,
-                oldTransform,
-                currentTransform
+                m_SelectedGameObject, oldT, newT, oldC, newC
             ));
         }
     } else {
@@ -267,7 +294,7 @@ void Application::RenderScene() {
     glClearColor(0.15f, 0.15f, 0.15f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // 2. Setup Global Uniforms (Light, View, Proj)
+    // 2. Setup Global Uniforms
     m_MainShader->Use();
     m_MainShader->SetVec3("lightPos", glm::vec3(1.5f, 5.0f, 3.0f));
     m_MainShader->SetVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
@@ -279,16 +306,13 @@ void Application::RenderScene() {
     m_MainShader->SetMat4("view", m_Camera->GetViewMatrix());
     m_MainShader->SetMat4("projection", m_Camera->GetProjectionMatrix(aspect));
 
-    // 3. Draw Floor Plane
-    m_MainShader->SetVec3("objectColor", glm::vec3(0.2f, 0.2f, 0.2f));
-    m_MainShader->SetMat4("model", glm::mat4(1.0f));
-    m_PlaneMesh->Draw();
-
-    // 4. Draw All Cubes in Scene
-    m_MainShader->SetVec3("objectColor", glm::vec3(1.0f, 0.5f, 0.2f));
-    for (auto& obj : m_ActiveScene->GetRoot()->children) {
-        m_MainShader->SetMat4("model", obj->GetWorldMatrix());
-        m_CubeMesh->Draw();
+    // 3. Render Loop
+    for (auto& obj : m_ActiveScene->GetGameObjects()) {
+        if (obj->mesh) {
+            m_MainShader->SetVec3("objectColor", obj->color);
+            m_MainShader->SetMat4("model", obj->GetWorldMatrix());
+            obj->mesh->Draw();
+        }
     }
 }
 

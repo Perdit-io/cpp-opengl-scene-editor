@@ -5,6 +5,8 @@
 #include <vector>
 #include <string>
 
+class Mesh;
+
 class GameObject {
 public:
     std::string name = "Object";
@@ -16,4 +18,7 @@ public:
 
     glm::mat4 GetWorldMatrix() const;
     void AddChild(GameObject* child);
+
+    Mesh* mesh = nullptr;
+    glm::vec3 color = {1.0f, 0.5f, 0.2f};
 };

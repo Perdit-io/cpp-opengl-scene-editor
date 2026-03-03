@@ -6,10 +6,11 @@
 
 class GameObject;
 class Scene;
+class Mesh;
 
 class CreateCommand : public Command {
 public:
-    CreateCommand(Scene* scene, const std::string& name);
+    CreateCommand(Scene* scene, const std::string& name, Mesh* mesh);
     ~CreateCommand() = default;
 
     void Execute() override;
@@ -18,6 +19,7 @@ public:
 private:
     Scene* m_Scene;
     std::string m_Name;
+    Mesh* m_Mesh;
     GameObject* m_RawPtr;
     std::unique_ptr<GameObject> m_HeldObject;
 };

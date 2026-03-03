@@ -2,8 +2,8 @@
 #include "Scene.h"
 #include "GameObject.h"
 
-CreateCommand::CreateCommand(Scene* scene, const std::string& name)
-    : m_Scene(scene), m_Name(name), m_RawPtr(nullptr), m_HeldObject(nullptr) {
+CreateCommand::CreateCommand(Scene* scene, const std::string& name, Mesh* mesh)
+    : m_Scene(scene), m_Name(name), m_Mesh(mesh), m_RawPtr(nullptr), m_HeldObject(nullptr) {
     (void)sizeof(GameObject);
 }
 
@@ -12,6 +12,10 @@ void CreateCommand::Execute() {
         m_Scene->ReinsertGameObject(std::move(m_HeldObject));
     } else {
         m_RawPtr = m_Scene->CreateGameObject(m_Name);
+    }
+
+    if (m_RawPtr) {
+        m_RawPtr->mesh = m_Mesh;
     }
 }
 

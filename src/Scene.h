@@ -18,6 +18,7 @@ public:
     void ReinsertGameObject(std::unique_ptr<GameObject> obj);
 
     GameObject* GetRoot() const { return m_Root.get(); }
+    const std::vector<std::unique_ptr<GameObject>>& GetGameObjects() const { return m_GameObjects; }
 private:
     std::unique_ptr<GameObject> m_Root;
     std::vector<std::unique_ptr<GameObject>> m_GameObjects;

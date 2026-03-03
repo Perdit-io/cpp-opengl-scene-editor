@@ -43,6 +43,7 @@ add_executable(SceneEditor
     src/CreateCommand.cpp
     src/TransformCommand.cpp
     src/DeleteCommand.cpp
+    src/PrimitiveGenerator.cpp
 )
 target_include_directories(SceneEditor PRIVATE
     "${CMAKE_SOURCE_DIR}/src"

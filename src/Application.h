@@ -32,6 +32,7 @@ private:
     std::unique_ptr<Shader> m_MainShader;
     std::unique_ptr<Mesh> m_CubeMesh;
     std::unique_ptr<Mesh> m_PlaneMesh;
+    std::unique_ptr<Mesh> m_SphereMesh;
     GameObject* m_SelectedGameObject = nullptr;
     std::unique_ptr<Camera> m_Camera;
 
