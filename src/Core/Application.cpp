@@ -136,10 +136,12 @@ void Application::HandleInput(float deltaTime) {
         glfwSetInputMode(m_Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
         // Keyboard
-        if (glfwGetKey(m_Window, GLFW_KEY_W) == GLFW_PRESS) m_Camera->ProcessKeyboard(0, deltaTime);
-        if (glfwGetKey(m_Window, GLFW_KEY_S) == GLFW_PRESS) m_Camera->ProcessKeyboard(1, deltaTime);
-        if (glfwGetKey(m_Window, GLFW_KEY_A) == GLFW_PRESS) m_Camera->ProcessKeyboard(2, deltaTime);
-        if (glfwGetKey(m_Window, GLFW_KEY_D) == GLFW_PRESS) m_Camera->ProcessKeyboard(3, deltaTime);
+        if (glfwGetKey(m_Window, GLFW_KEY_W) == GLFW_PRESS) m_Camera->ProcessKeyboard(FORWARD, deltaTime);
+        if (glfwGetKey(m_Window, GLFW_KEY_S) == GLFW_PRESS) m_Camera->ProcessKeyboard(BACKWARD, deltaTime);
+        if (glfwGetKey(m_Window, GLFW_KEY_A) == GLFW_PRESS) m_Camera->ProcessKeyboard(LEFT, deltaTime);
+        if (glfwGetKey(m_Window, GLFW_KEY_D) == GLFW_PRESS) m_Camera->ProcessKeyboard(RIGHT, deltaTime);
+        if (glfwGetKey(m_Window, GLFW_KEY_SPACE) == GLFW_PRESS)      m_Camera->ProcessKeyboard(UP, deltaTime);
+        if (glfwGetKey(m_Window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) m_Camera->ProcessKeyboard(DOWN, deltaTime);
 
         // Mouse
         double xpos, ypos;
@@ -218,7 +220,14 @@ void Application::DrawUI() {
 
     if (ImGui::BeginPopup("ImportSpawnPopup")) {
         static char objPath[256] = "assets/models/suzanne.obj";
+        static float importScale = 1.0f;
+
+        ImGui::Text("Import Settings");
         ImGui::InputText("OBJ Path", objPath, 256);
+
+        ImGui::InputFloat("Import Scale", &importScale, 0.001f, 0.01f, "%.4f");
+
+        ImGui::Separator();
 
         if (ImGui::Button("Import OBJ")) {
             Mesh* meshPtr = MeshLoader::LoadOBJ(objPath);
@@ -231,7 +240,9 @@ void Application::DrawUI() {
 
                 std::string name = "Imported Model (" + std::to_string(++m_SpawnCount) + ")";
 
-                builder.CreateObject(name, meshPtr, nullptr, nullptr, glm::vec3(0.0f, 0.0f, 0.0f));
+                builder.CreateObject(name, meshPtr, nullptr, nullptr,
+                                     glm::vec3(0.0f, 0.0f, 0.0f),
+                                     glm::vec3(importScale));
 
                 m_UndoStack.push_back(std::move(batch));
                 m_RedoStack.clear();

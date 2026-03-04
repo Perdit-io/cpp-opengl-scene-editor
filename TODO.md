@@ -4,7 +4,7 @@
 - [x] Input system (WASD + Mouse)
 - [x] Primitives (Cube, Plane, Sphere)
 - [x] Static mesh (OBJ loading)
-- [ ] Textures (PNG/JPG support)
+- [x] Textures (PNG/JPG support)
 - [x] Object transforms (TRS matrices)
 - [x] World outliner (Scene UI list)
 - [x] Parenting (Transform hierarchy)
@@ -15,4 +15,4 @@
 ## Test Cases
 - [x] 1. Replicate 3-Cube Scene (Exact Transforms)
 - [x] 2. Assemble Primitive Table (10x1.5x5)
-- [ ] 3. Load Sponza Scene & Navigate
+- [x] 3. Load Sponza Scene & Navigate

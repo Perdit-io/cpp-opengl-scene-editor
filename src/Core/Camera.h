@@ -2,6 +2,15 @@
 
 #include <glm/glm.hpp>
 
+enum Camera_Movement {
+    FORWARD,
+    BACKWARD,
+    LEFT,
+    RIGHT,
+    UP,
+    DOWN
+};
+
 class Camera {
 public:
     glm::vec3 position;
@@ -12,8 +21,8 @@ public:
 
     float yaw;
     float pitch;
-    float moveSpeed = 5.0f;
-    float sensitivity = 0.1f;
+    float moveSpeed = 15.0f;
+    float sensitivity = 0.2f;
     float fov;
     float nearPlane;
     float farPlane;
