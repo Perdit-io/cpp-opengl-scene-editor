@@ -1,5 +1,8 @@
 # Development Log - Scene Editor
 
+## Milestone 12.5: Project Organization
+**Goal:** Modularize the codebase into specialized subdirectories
+
 ## Milestone 12: Hierarchy & Scene Organization
 **Goal:** Establish a robust parent-child system capable of handling complex primitive assemblies.
 

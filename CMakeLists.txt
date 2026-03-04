@@ -33,28 +33,42 @@ target_link_libraries(imgui PRIVATE glfw glad)
 
 # 4. Main Executable
 add_executable(SceneEditor
+    # Core
     src/main.cpp
-    src/Application.cpp
-    src/GameObject.cpp
-    src/Scene.cpp
-    src/Shader.cpp
-    src/Mesh.cpp
-    src/Camera.cpp
-    src/CreateCommand.cpp
-    src/TransformCommand.cpp
-    src/DeleteCommand.cpp
-    src/BatchParentCommand.cpp
-    src/SceneBuilder.cpp
-    src/PrimitiveGenerator.cpp
+    src/Core/Application.cpp
+    src/Core/Camera.cpp
+
+    # Scene
+    src/Scene/GameObject.cpp
+    src/Scene/Scene.cpp
+    src/Scene/SceneBuilder.cpp
+
+    # Graphics
+    src/Graphics/Shader.cpp
+    src/Graphics/Mesh.cpp
+    src/Graphics/PrimitiveGenerator.cpp
+
+    # Commands
+    src/Commands/CreateCommand.cpp
+    src/Commands/TransformCommand.cpp
+    src/Commands/DeleteCommand.cpp
+    src/Commands/BatchParentCommand.cpp
 )
+
+# 5. Include Directories
 target_include_directories(SceneEditor PRIVATE
-    "${CMAKE_SOURCE_DIR}/src"
+    "${CMAKE_SOURCE_DIR}/src/Core"
+    "${CMAKE_SOURCE_DIR}/src/Scene"
+    "${CMAKE_SOURCE_DIR}/src/Graphics"
+    "${CMAKE_SOURCE_DIR}/src/Commands"
     "${CMAKE_SOURCE_DIR}/dependencies/glad/include"
     "${CMAKE_SOURCE_DIR}/dependencies/glm"
     "${CMAKE_SOURCE_DIR}/dependencies/imgui"
 )
+
 target_link_libraries(SceneEditor PRIVATE glfw glad imgui)
 
+# 6. OS Specifics
 if(APPLE)
     target_link_libraries(SceneEditor PRIVATE
         "-framework OpenGL"
@@ -63,5 +77,6 @@ if(APPLE)
     )
 endif()
 
+# 7. Resource Management
 file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/shaders"
      DESTINATION "${CMAKE_CURRENT_BINARY_DIR}")
