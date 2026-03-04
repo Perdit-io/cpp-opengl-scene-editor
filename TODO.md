@@ -3,7 +3,7 @@
 ## Core Features
 - [x] Input system (WASD + Mouse)
 - [x] Primitives (Cube, Plane, Sphere)
-- [ ] Static mesh (OBJ loading)
+- [x] Static mesh (OBJ loading)
 - [ ] Textures (PNG/JPG support)
 - [x] Object transforms (TRS matrices)
 - [x] World outliner (Scene UI list)

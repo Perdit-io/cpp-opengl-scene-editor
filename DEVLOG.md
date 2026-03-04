@@ -1,5 +1,8 @@
 # Development Log - Scene Editor
 
+## Milestone 13: OBJ Model Loader & Diagnostics
+**Goal:** Load and render external .obj geometry (as a single mesh) with real-time parsing feedback and performance benchmarking.
+
 ## Milestone 12.5: Project Organization
 **Goal:** Modularize the codebase into specialized subdirectories
 

@@ -33,8 +33,10 @@ private:
     std::unique_ptr<Mesh> m_CubeMesh;
     std::unique_ptr<Mesh> m_PlaneMesh;
     std::unique_ptr<Mesh> m_SphereMesh;
+    std::vector<std::unique_ptr<Mesh>> m_LoadedMeshes;
     GameObject* m_SelectedGameObject = nullptr;
     std::unique_ptr<Camera> m_Camera;
+    unsigned int m_SpawnCount = 0;
 
     std::deque<std::unique_ptr<Command>> m_UndoStack;
     std::deque<std::unique_ptr<Command>> m_RedoStack;

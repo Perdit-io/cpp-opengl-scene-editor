@@ -53,6 +53,9 @@ add_executable(SceneEditor
     src/Commands/TransformCommand.cpp
     src/Commands/DeleteCommand.cpp
     src/Commands/BatchParentCommand.cpp
+
+    # Assets
+    src/Assets/MeshLoader.cpp
 )
 
 # 5. Include Directories
@@ -61,6 +64,7 @@ target_include_directories(SceneEditor PRIVATE
     "${CMAKE_SOURCE_DIR}/src/Scene"
     "${CMAKE_SOURCE_DIR}/src/Graphics"
     "${CMAKE_SOURCE_DIR}/src/Commands"
+    "${CMAKE_SOURCE_DIR}/src/Assets"
     "${CMAKE_SOURCE_DIR}/dependencies/glad/include"
     "${CMAKE_SOURCE_DIR}/dependencies/glm"
     "${CMAKE_SOURCE_DIR}/dependencies/imgui"
@@ -79,4 +83,7 @@ endif()
 
 # 7. Resource Management
 file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/shaders"
+     DESTINATION "${CMAKE_CURRENT_BINARY_DIR}")
+
+file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/assets"
      DESTINATION "${CMAKE_CURRENT_BINARY_DIR}")

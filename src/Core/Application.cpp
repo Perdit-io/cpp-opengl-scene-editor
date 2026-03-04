@@ -12,6 +12,7 @@
 #include "PrimitiveGenerator.h"
 #include "BatchParentCommand.h"
 #include "SceneBuilder.h"
+#include "MeshLoader.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -183,12 +184,10 @@ void Application::DrawUI() {
     }
 
     if (ImGui::BeginPopup("spawn_popup")) {
-        static int spawnCount = 0;
-
         auto Spawn = [&](const std::string& type, Mesh* meshPtr) {
             m_SelectedGameObject = nullptr;
 
-            std::string name = type + " (" + std::to_string(++spawnCount) + ")";
+            std::string name = type + " (" + std::to_string(++m_SpawnCount) + ")";
 
             // The command now takes the mesh as a parameter
             auto cmd = std::make_unique<CreateCommand>(m_ActiveScene.get(), name, meshPtr);
@@ -205,8 +204,7 @@ void Application::DrawUI() {
     if (ImGui::Button("Create Empty")) {
         m_SelectedGameObject = nullptr;
 
-        static int emptyCount = 0;
-        std::string name = "New Empty Object (" + std::to_string(++emptyCount) + ")";
+        std::string name = "New Empty Object (" + std::to_string(++m_SpawnCount) + ")";
         auto cmd = std::make_unique<CreateCommand>(m_ActiveScene.get(), name, nullptr);
         PushCommand(std::move(cmd));
     }
@@ -214,6 +212,33 @@ void Application::DrawUI() {
     if (ImGui::Button("Import/Spawn")) { ImGui::OpenPopup("ImportSpawnPopup"); }
 
     if (ImGui::BeginPopup("ImportSpawnPopup")) {
+        static char objPath[256] = "assets/models/suzanne.obj";
+        ImGui::InputText("OBJ Path", objPath, 256);
+
+        if (ImGui::Button("Import OBJ")) {
+            Mesh* meshPtr = MeshLoader::LoadOBJ(objPath);
+            if (meshPtr) {
+                m_SelectedGameObject = nullptr;
+                m_LoadedMeshes.push_back(std::unique_ptr<Mesh>(meshPtr));
+
+                auto batch = std::make_unique<BatchCommand>();
+                SceneBuilder builder = { m_ActiveScene.get(), batch.get() };
+
+                std::string name = "Imported Model (" + std::to_string(++m_SpawnCount) + ")";
+
+                builder.CreateObject(name, meshPtr, nullptr, glm::vec3(0.0f, 0.0f, 0.0f));
+
+                m_UndoStack.push_back(std::move(batch));
+                m_RedoStack.clear();
+
+                if (m_UndoStack.size() > MAX_UNDO_STEPS) {
+                    m_UndoStack.pop_front();
+                }
+            }
+        }
+
+        ImGui::Separator();
+
         // Test Case Spawners
         if (ImGui::MenuItem("Spawn Test Case 1 (Cube Stack)")) {
             m_SelectedGameObject = nullptr;
@@ -223,11 +248,6 @@ void Application::DrawUI() {
             m_SelectedGameObject = nullptr;
             SpawnTableTestCase();
         }
-
-        // ImGui::Separator();
-
-        // if (ImGui::MenuItem("Import OBJ...")) {
-        // }
 
         ImGui::EndPopup();
     }
