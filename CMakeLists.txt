@@ -47,6 +47,8 @@ add_executable(SceneEditor
     src/Graphics/Shader.cpp
     src/Graphics/Mesh.cpp
     src/Graphics/PrimitiveGenerator.cpp
+    src/Graphics/Texture.cpp
+    src/Graphics/stb_image_impl.cpp
 
     # Commands
     src/Commands/CreateCommand.cpp
@@ -68,6 +70,7 @@ target_include_directories(SceneEditor PRIVATE
     "${CMAKE_SOURCE_DIR}/dependencies/glad/include"
     "${CMAKE_SOURCE_DIR}/dependencies/glm"
     "${CMAKE_SOURCE_DIR}/dependencies/imgui"
+    "${CMAKE_SOURCE_DIR}/dependencies/stb"
 )
 
 target_link_libraries(SceneEditor PRIVATE glfw glad imgui)

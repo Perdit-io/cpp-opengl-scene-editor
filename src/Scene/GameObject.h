@@ -6,11 +6,13 @@
 #include <string>
 
 class Mesh;
+class Texture;
 
 class GameObject {
 public:
     std::string name = "Object";
     Transform transform;
+    Texture* texture = nullptr;
     bool markedForDeletion = false;
 
     void SetParent(GameObject* newParent);

@@ -11,6 +11,7 @@
 Mesh* MeshLoader::LoadOBJ(const std::string& path) {
     std::vector<glm::vec3> temp_positions;
     std::vector<glm::vec3> temp_normals;
+    std::vector<glm::vec2> temp_uvs;
     std::vector<Vertex> out_vertices;
 
     std::ifstream file(path);
@@ -19,7 +20,6 @@ Mesh* MeshLoader::LoadOBJ(const std::string& path) {
         return nullptr;
     }
 
-    // --- 1. Start Timer ---
     double startTime = glfwGetTime();
     std::cout << "--- Starting Import: " << path << " ---" << std::endl;
 
@@ -32,7 +32,6 @@ Mesh* MeshLoader::LoadOBJ(const std::string& path) {
         std::string prefix;
         ss >> prefix;
 
-        // --- 2. Group/Object Logger ---
         if (prefix == "o" || prefix == "g") {
             std::string name;
             ss >> name;
@@ -43,12 +42,15 @@ Mesh* MeshLoader::LoadOBJ(const std::string& path) {
             glm::vec3 pos;
             ss >> pos.x >> pos.y >> pos.z;
             temp_positions.push_back(pos);
-
-            // --- 3. Progress Logger ---
             vertexCount++;
             if (vertexCount % 50000 == 0) {
                 std::cout << "  [Log] Parsed " << vertexCount << " vertices..." << std::endl;
             }
+        }
+        else if (prefix == "vt") {
+            glm::vec2 uv;
+            ss >> uv.x >> uv.y;
+            temp_uvs.push_back(uv);
         }
         else if (prefix == "vn") {
             glm::vec3 norm;
@@ -59,27 +61,35 @@ Mesh* MeshLoader::LoadOBJ(const std::string& path) {
             for (int i = 0; i < 3; i++) {
                 std::string vertexData;
                 ss >> vertexData;
+
                 std::replace(vertexData.begin(), vertexData.end(), '/', ' ');
                 std::stringstream vss(vertexData);
 
-                int vIdx, vtIdx, vnIdx;
+                int vIdx, vtIdx = -1, vnIdx = -1;
                 vss >> vIdx;
 
                 Vertex v;
                 v.Position = temp_positions[vIdx - 1];
 
-                if (vertexData.find("  ") != std::string::npos) {
+                bool hasNoUV = (vertexData.find("  ") != std::string::npos);
+
+                if (hasNoUV) {
                     vss >> vnIdx;
                     v.Normal = temp_normals[vnIdx - 1];
-                } else if (vss >> vtIdx >> vnIdx) {
-                    v.Normal = temp_normals[vnIdx - 1];
+                    v.TexCoords = glm::vec2(0.0f);
+                } else {
+                    if (vss >> vtIdx) {
+                        v.TexCoords = temp_uvs[vtIdx - 1];
+                    }
+                    if (vss >> vnIdx) {
+                        v.Normal = temp_normals[vnIdx - 1];
+                    }
                 }
                 out_vertices.push_back(v);
             }
         }
     }
 
-    // --- 4. End Timer & Summary ---
     double endTime = glfwGetTime();
     double duration = endTime - startTime;
 

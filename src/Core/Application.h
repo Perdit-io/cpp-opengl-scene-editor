@@ -10,6 +10,7 @@ class Mesh;
 class GameObject;
 class Camera;
 class Command;
+class Texture;
 
 class Application {
 public:
@@ -35,6 +36,7 @@ private:
     std::unique_ptr<Mesh> m_SphereMesh;
     std::vector<std::unique_ptr<Mesh>> m_LoadedMeshes;
     GameObject* m_SelectedGameObject = nullptr;
+    std::unique_ptr<Texture> m_FloorTexture;
     std::unique_ptr<Camera> m_Camera;
     unsigned int m_SpawnCount = 0;
 

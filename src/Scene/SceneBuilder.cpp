@@ -4,13 +4,15 @@
 #include "BatchParentCommand.h"
 #include "GameObject.h"
 
-GameObject* SceneBuilder::CreateObject(const std::string& name, Mesh* mesh, GameObject* parent,
-                         glm::vec3 pos, glm::vec3 scale)
+GameObject* SceneBuilder::CreateObject(const std::string& name, Mesh* mesh, Texture* texture,
+                                    GameObject* parent, glm::vec3 pos, glm::vec3 scale)
 {
     auto createCmd = std::make_unique<CreateCommand>(scene, name, mesh);
     createCmd->Execute();
     GameObject* obj = scene->GetGameObjects().back().get();
     batch->Add(std::move(createCmd));
+
+    obj->texture = texture;
 
     if (parent) {
         auto parentCmd = std::make_unique<ParentCommand>(obj, parent);

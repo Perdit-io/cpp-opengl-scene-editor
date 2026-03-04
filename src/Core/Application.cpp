@@ -13,7 +13,9 @@
 #include "BatchParentCommand.h"
 #include "SceneBuilder.h"
 #include "MeshLoader.h"
+#include "Texture.h"
 
+#include <cstddef>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
@@ -33,6 +35,9 @@ Application::Application(const char* title, int width, int height) {
     floor->mesh = m_PlaneMesh.get();
     floor->color = glm::vec3(0.2f, 0.2f, 0.2f);
     floor->transform.position = glm::vec3(0.0f, 0.0f, 0.0f);
+
+    m_FloorTexture = std::make_unique<Texture>("assets/textures/floor.jpg", "diffuse");
+    floor->texture = m_FloorTexture.get();
 
     m_Camera = std::make_unique<Camera>(glm::vec3(0.0f, 7.0f, 35.0f));
 }
@@ -226,7 +231,7 @@ void Application::DrawUI() {
 
                 std::string name = "Imported Model (" + std::to_string(++m_SpawnCount) + ")";
 
-                builder.CreateObject(name, meshPtr, nullptr, glm::vec3(0.0f, 0.0f, 0.0f));
+                builder.CreateObject(name, meshPtr, nullptr, nullptr, glm::vec3(0.0f, 0.0f, 0.0f));
 
                 m_UndoStack.push_back(std::move(batch));
                 m_RedoStack.clear();
@@ -417,6 +422,7 @@ void Application::RenderScene() {
 
     // 2. Setup Global Uniforms
     m_MainShader->Use();
+    m_MainShader->SetInt("texture_diffuse", 0);
     m_MainShader->SetVec3("lightPos", glm::vec3(1.5f, 5.0f, 3.0f));
     m_MainShader->SetVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
 
@@ -432,6 +438,12 @@ void Application::RenderScene() {
         if (obj->mesh) {
             m_MainShader->SetVec3("objectColor", obj->color);
             m_MainShader->SetMat4("model", obj->GetWorldMatrix());
+            if (obj->texture) {
+                m_MainShader->SetBool("useTexture", true);
+                obj->texture->Bind(0);
+            } else {
+                m_MainShader->SetBool("useTexture", false);
+            }
             obj->mesh->Draw();
         }
     }
@@ -476,14 +488,11 @@ void Application::SpawnStackTestCase() {
     auto batch = std::make_unique<BatchCommand>();
     SceneBuilder builder = { m_ActiveScene.get(), batch.get() };
 
-    builder.CreateObject("Cube 1", m_CubeMesh.get(), nullptr,
-                         glm::vec3(0.0f, 0.9f, 0.0f));
+    builder.CreateObject("Cube 1", m_CubeMesh.get(), nullptr, nullptr, glm::vec3(0.0f, 0.9f, 0.0f));
 
-    builder.CreateObject("Cube 2", m_CubeMesh.get(), nullptr,
-                         glm::vec3(-1.5f, 2.0f, 0.0f));
+    builder.CreateObject("Cube 2", m_CubeMesh.get(), nullptr, nullptr, glm::vec3(-1.5f, 2.0f, 0.0f));
 
-    builder.CreateObject("Cube 3", m_CubeMesh.get(), nullptr,
-                         glm::vec3(-1.5f, 3.0f, -2.0f));
+    builder.CreateObject("Cube 3", m_CubeMesh.get(), nullptr, nullptr, glm::vec3(-1.5f, 3.0f, -2.0f));
 
     m_UndoStack.push_back(std::move(batch));
     m_RedoStack.clear();
@@ -498,11 +507,10 @@ void Application::SpawnTableTestCase() {
     SceneBuilder builder = { m_ActiveScene.get(), batch.get() };
 
     // 1. Create Group
-    GameObject* group = builder.CreateObject("Table_Assembly", nullptr, nullptr,
-                                             glm::vec3(10.0f, 0.0f, 0.0f));
+    GameObject* group = builder.CreateObject("Table_Assembly", nullptr, nullptr, nullptr, glm::vec3(10.0f, 0.0f, 0.0f));
 
     // 2. Create Top
-    builder.CreateObject("Table_Top", m_CubeMesh.get(), group,
+    builder.CreateObject("Table_Top", m_CubeMesh.get(), nullptr, group,
                          glm::vec3(0.0f, 4.75f, 0.0f), glm::vec3(10.0f, 1.5f, 5.0f));
 
     // 3. Create Legs
@@ -514,7 +522,7 @@ void Application::SpawnTableTestCase() {
     };
 
     for (int i = 0; i < 4; ++i) {
-        builder.CreateObject("Leg_" + std::to_string(i + 1), m_CubeMesh.get(), group,
+        builder.CreateObject("Leg_" + std::to_string(i + 1), m_CubeMesh.get(), nullptr, group,
                              positions[i], glm::vec3(0.5f, 4.0f, 0.5f));
     }
 

@@ -9,7 +9,8 @@ obj/
 # External Assets
 *.zip
 *.rar
-assets/modules/
+assets/models/
+assets/textures/
 
 # Zed IDE LSP helper
 .zed/

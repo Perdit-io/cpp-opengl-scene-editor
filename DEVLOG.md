@@ -1,5 +1,8 @@
 # Development Log - Scene Editor
 
+## Milestone 14: Texture Mapping & UV Coordination
+**Goal:** Implement 2D image support via stb_image, enabling per-object diffuse textures with integrated UV mapping for all primitives and imported models.
+
 ## Milestone 13: OBJ Model Loader & Diagnostics
 **Goal:** Load and render external .obj geometry (as a single mesh) with real-time parsing feedback and performance benchmarking.
 
