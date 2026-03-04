@@ -230,19 +230,25 @@ void Application::DrawUI() {
         ImGui::Separator();
 
         if (ImGui::Button("Import OBJ")) {
-            Mesh* meshPtr = MeshLoader::LoadOBJ(objPath);
-            if (meshPtr) {
+            std::vector<SubMeshData> subMeshes = MeshLoader::LoadOBJ(objPath);
+
+            if (!subMeshes.empty()) {
                 m_SelectedGameObject = nullptr;
-                m_LoadedMeshes.push_back(std::unique_ptr<Mesh>(meshPtr));
 
                 auto batch = std::make_unique<BatchCommand>();
                 SceneBuilder builder = { m_ActiveScene.get(), batch.get() };
 
-                std::string name = "Imported Model (" + std::to_string(++m_SpawnCount) + ")";
+                std::string rootName = "Model: " + std::string(objPath);
+                GameObject* rootObj = builder.CreateObject(rootName, nullptr, nullptr, nullptr,
+                                                          glm::vec3(0.0f), glm::vec3(importScale));
 
-                builder.CreateObject(name, meshPtr, nullptr, nullptr,
-                                     glm::vec3(0.0f, 0.0f, 0.0f),
-                                     glm::vec3(importScale));
+                for (auto& sm : subMeshes) {
+                    auto newMesh = std::make_unique<Mesh>(sm.vertices);
+
+                    m_LoadedMeshes.push_back(std::move(newMesh));
+
+                    builder.CreateObject(sm.name, m_LoadedMeshes.back().get(), nullptr, rootObj);
+                }
 
                 m_UndoStack.push_back(std::move(batch));
                 m_RedoStack.clear();

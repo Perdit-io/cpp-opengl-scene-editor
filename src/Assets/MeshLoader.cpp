@@ -1,31 +1,31 @@
 #include "MeshLoader.h"
+#include "Model.h"
 #include "Mesh.h"
 
 #include <GLFW/glfw3.h>
-#include <vector>
 #include <iostream>
 #include <fstream>
 #include <sstream>
 #include <algorithm>
 
-Mesh* MeshLoader::LoadOBJ(const std::string& path) {
+std::vector<SubMeshData> MeshLoader::LoadOBJ(const std::string& path) {
+    std::vector<SubMeshData> subMeshes;
     std::vector<glm::vec3> temp_positions;
     std::vector<glm::vec3> temp_normals;
     std::vector<glm::vec2> temp_uvs;
-    std::vector<Vertex> out_vertices;
 
     std::ifstream file(path);
     if (!file.is_open()) {
         std::cerr << "ERROR: Could not open OBJ file at: " << path << std::endl;
-        return nullptr;
+        return subMeshes;
     }
 
     double startTime = glfwGetTime();
     std::cout << "--- Starting Import: " << path << " ---" << std::endl;
 
-    int vertexCount = 0;
-    int objectCount = 0;
     std::string line;
+    SubMeshData currentMesh;
+    currentMesh.name = "Initial_Mesh";
 
     while (std::getline(file, line)) {
         std::stringstream ss(line);
@@ -33,19 +33,17 @@ Mesh* MeshLoader::LoadOBJ(const std::string& path) {
         ss >> prefix;
 
         if (prefix == "o" || prefix == "g") {
-            std::string name;
-            ss >> name;
-            objectCount++;
-            std::cout << "  [OBJ] Found Object/Group: " << name << std::endl;
+            // If the current mesh has data, save it before starting a new one
+            if (!currentMesh.vertices.empty()) {
+                subMeshes.push_back(currentMesh);
+                currentMesh.vertices.clear();
+            }
+            ss >> currentMesh.name;
         }
         else if (prefix == "v") {
             glm::vec3 pos;
             ss >> pos.x >> pos.y >> pos.z;
             temp_positions.push_back(pos);
-            vertexCount++;
-            if (vertexCount % 50000 == 0) {
-                std::cout << "  [Log] Parsed " << vertexCount << " vertices..." << std::endl;
-            }
         }
         else if (prefix == "vt") {
             glm::vec2 uv;
@@ -85,9 +83,13 @@ Mesh* MeshLoader::LoadOBJ(const std::string& path) {
                         v.Normal = temp_normals[vnIdx - 1];
                     }
                 }
-                out_vertices.push_back(v);
+                currentMesh.vertices.push_back(v);
             }
         }
+    }
+
+    if (!currentMesh.vertices.empty()) {
+        subMeshes.push_back(currentMesh);
     }
 
     double endTime = glfwGetTime();
@@ -95,10 +97,9 @@ Mesh* MeshLoader::LoadOBJ(const std::string& path) {
 
     std::cout << "--- Import Complete ---" << std::endl;
     std::cout << "  Total Vertices: " << temp_positions.size() << std::endl;
-    std::cout << "  Total Faces:    " << out_vertices.size() / 3 << std::endl;
-    std::cout << "  Sub-objects:    " << objectCount << " (Flattened into 1 mesh)" << std::endl;
+    std::cout << "  Total Faces:    " << currentMesh.vertices.size() / 3 << std::endl;
     std::cout << "  Time Taken:     " << duration << " seconds" << std::endl;
     std::cout << "-----------------------" << std::endl;
 
-    return new Mesh(out_vertices);
+    return subMeshes;
 }

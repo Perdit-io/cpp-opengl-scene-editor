@@ -1,10 +1,16 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
-class Mesh;
+struct Vertex;
+
+struct SubMeshData {
+    std::string name;
+    std::vector<Vertex> vertices;
+};
 
 class MeshLoader {
 public:
-    static Mesh* LoadOBJ(const std::string& path);
+    static std::vector<SubMeshData> LoadOBJ(const std::string& path);
 };
