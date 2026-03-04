@@ -44,4 +44,7 @@ private:
     void Undo();
     void Redo();
     void HandleInput(float deltaTime);
+
+    void SpawnStackTestCase();
+    void SpawnTableTestCase();
 };

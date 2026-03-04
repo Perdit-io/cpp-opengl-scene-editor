@@ -1,5 +1,8 @@
 # Development Log - Scene Editor
 
+## Milestone 12: Hierarchy & Scene Organization
+**Goal:** Establish a robust parent-child system capable of handling complex primitive assemblies.
+
 ## Milestone 11: Editor Navigation (Fly-Camera)
 **Goal:** Implement a 3D flying camera system with WASD movement and mouse-look to allow for spatial inspection and object alignment.
 

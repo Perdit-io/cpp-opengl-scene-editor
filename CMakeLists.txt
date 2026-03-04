@@ -43,6 +43,8 @@ add_executable(SceneEditor
     src/CreateCommand.cpp
     src/TransformCommand.cpp
     src/DeleteCommand.cpp
+    src/BatchParentCommand.cpp
+    src/SceneBuilder.cpp
     src/PrimitiveGenerator.cpp
 )
 target_include_directories(SceneEditor PRIVATE

@@ -11,13 +11,12 @@ struct Vertex {
 
 class Mesh {
 public:
-    std::vector<Vertex> vertices;
-    unsigned int VAO;
-
     Mesh(std::vector<Vertex> vertices);
+    ~Mesh();
     void Draw();
 
 private:
-    unsigned int VBO;
+    std::vector<Vertex> m_Vertices;
+    unsigned int VAO, VBO;
     void SetupMesh();
 };

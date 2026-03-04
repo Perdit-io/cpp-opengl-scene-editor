@@ -10,6 +10,8 @@
 #include "TransformCommand.h"
 #include "DeleteCommand.h"
 #include "PrimitiveGenerator.h"
+#include "BatchParentCommand.h"
+#include "SceneBuilder.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -26,25 +28,12 @@ Application::Application(const char* title, int width, int height) {
     m_PlaneMesh  = std::make_unique<Mesh>(PrimitiveGenerator::GeneratePlane(20.0f));
     m_SphereMesh = std::make_unique<Mesh>(PrimitiveGenerator::GenerateSphere(1.0f, 32, 16));
 
-    // 2. Setup initial scene (Test Case 1)
     auto floor = m_ActiveScene->CreateGameObject("Ground Plane");
     floor->mesh = m_PlaneMesh.get();
     floor->color = glm::vec3(0.2f, 0.2f, 0.2f);
     floor->transform.position = glm::vec3(0.0f, 0.0f, 0.0f);
 
-    auto c1 = m_ActiveScene->CreateGameObject("Cube 1");
-    c1->transform.position = glm::vec3(0.0f, 0.9f, 0.0f);
-    c1->mesh = m_CubeMesh.get();
-
-    auto c2 = m_ActiveScene->CreateGameObject("Cube 2");
-    c2->transform.position = glm::vec3(-1.5f, 2.0f, 0.0f);
-    c2->mesh = m_CubeMesh.get();
-
-    auto c3 = m_ActiveScene->CreateGameObject("Cube 3");
-    c3->transform.position = glm::vec3(-1.5f, 3.0f, -2.0f);
-    c3->mesh = m_CubeMesh.get();
-
-    m_Camera = std::make_unique<Camera>(glm::vec3(0.0f, 1.0f, 8.0f));
+    m_Camera = std::make_unique<Camera>(glm::vec3(0.0f, 7.0f, 35.0f));
 }
 
 Application::~Application() {
@@ -157,7 +146,7 @@ void Application::HandleInput(float deltaTime) {
         }
 
         float xoffset = (float)xpos - lastX;
-        float yoffset = lastY - (float)ypos; // Reversed since y-coords range from bottom to top
+        float yoffset = lastY - (float)ypos;
         lastX = (float)xpos;
         lastY = (float)ypos;
 
@@ -183,13 +172,13 @@ void Application::DrawUI() {
     }
 
     ImGui::Begin("World Outliner");
-    for (auto child : m_ActiveScene->GetRoot()->children) {
+    for (auto child : m_ActiveScene->GetRoot()->GetChildren()) {
         DrawSceneHierarchy(child);
     }
 
     ImGui::Separator();
 
-    if (ImGui::Button("Spawn Object...")) {
+    if (ImGui::Button("Spawn Primitive")) {
         ImGui::OpenPopup("spawn_popup");
     }
 
@@ -197,6 +186,8 @@ void Application::DrawUI() {
         static int spawnCount = 0;
 
         auto Spawn = [&](const std::string& type, Mesh* meshPtr) {
+            m_SelectedGameObject = nullptr;
+
             std::string name = type + " (" + std::to_string(++spawnCount) + ")";
 
             // The command now takes the mesh as a parameter
@@ -211,9 +202,38 @@ void Application::DrawUI() {
         ImGui::EndPopup();
     }
 
+    if (ImGui::Button("Create Empty")) {
+        m_SelectedGameObject = nullptr;
+
+        static int emptyCount = 0;
+        std::string name = "New Empty Object (" + std::to_string(++emptyCount) + ")";
+        auto cmd = std::make_unique<CreateCommand>(m_ActiveScene.get(), name, nullptr);
+        PushCommand(std::move(cmd));
+    }
+
+    if (ImGui::Button("Import/Spawn")) { ImGui::OpenPopup("ImportSpawnPopup"); }
+
+    if (ImGui::BeginPopup("ImportSpawnPopup")) {
+        // Test Case Spawners
+        if (ImGui::MenuItem("Spawn Test Case 1 (Cube Stack)")) {
+            m_SelectedGameObject = nullptr;
+            SpawnStackTestCase();
+        }
+        if (ImGui::MenuItem("Spawn Test Case 2 (Table)")) {
+            m_SelectedGameObject = nullptr;
+            SpawnTableTestCase();
+        }
+
+        // ImGui::Separator();
+
+        // if (ImGui::MenuItem("Import OBJ...")) {
+        // }
+
+        ImGui::EndPopup();
+    }
+
     ImGui::End();
 
-    // --- 3. Inspector & Status ---
     DrawInspector();
 
     ImGui::Begin("Status");
@@ -227,7 +247,7 @@ void Application::DrawSceneHierarchy(GameObject* node) {
     flags |= ImGuiTreeNodeFlags_SpanAvailWidth;
 
     bool node_open = false;
-    if (node->children.empty()) {
+    if (node->GetChildren().empty()) {
         flags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
         ImGui::TreeNodeEx((void*)(intptr_t)node, flags, "%s", node->name.c_str());
     } else {
@@ -236,7 +256,7 @@ void Application::DrawSceneHierarchy(GameObject* node) {
 
     if (ImGui::IsItemClicked()) m_SelectedGameObject = node;
 
-    if (node->parent != nullptr && ImGui::BeginPopupContextItem()) {
+    if (node->GetParent() != nullptr && ImGui::BeginPopupContextItem()) {
         if (ImGui::MenuItem("Delete Object")) {
             auto cmd = std::make_unique<DeleteCommand>(m_ActiveScene.get(), node);
 
@@ -248,7 +268,7 @@ void Application::DrawSceneHierarchy(GameObject* node) {
     }
 
     if (node_open) {
-        for (auto child : node->children) {
+        for (auto child : node->GetChildren()) {
             DrawSceneHierarchy(child);
         }
         ImGui::TreePop();
@@ -301,6 +321,51 @@ void Application::DrawInspector() {
                 ));
             }
             isEditingColor = false;
+        }
+
+        ImGui::Separator();
+
+        ImGui::Text("Relationship");
+
+        GameObject* sceneRoot = m_ActiveScene->GetRoot();
+        GameObject* currentParent = m_SelectedGameObject->GetParent();
+
+        const char* parentName = currentParent ? currentParent->name.c_str() : "Scene Root";
+
+        if (ImGui::BeginCombo("Parent", parentName)) {
+            bool isRootSelected = (currentParent == sceneRoot);
+            if (ImGui::Selectable("Scene Root", isRootSelected)) {
+                m_SelectedGameObject->SetParent(sceneRoot);
+            }
+
+            for (auto& obj : m_ActiveScene->GetGameObjects()) {
+                if (obj.get() == m_SelectedGameObject || obj.get() == sceneRoot) continue;
+                if (obj->IsDescendantOf(m_SelectedGameObject)) continue;
+
+                bool isSelected = (currentParent == obj.get());
+                if (ImGui::Selectable(obj->name.c_str(), isSelected)) {
+                    m_SelectedGameObject->SetParent(obj.get());
+                }
+            }
+            ImGui::EndCombo();
+            if (currentParent) {
+                glm::vec3 pScale = currentParent->transform.scale;
+                const float epsilon = 0.001f;
+                bool isNonUniform = (std::abs(pScale.x - pScale.y) > epsilon) ||
+                                    (std::abs(pScale.y - pScale.z) > epsilon) ||
+                                    (std::abs(pScale.x - pScale.z) > epsilon);
+
+                if (isNonUniform) {
+                    ImGui::Spacing();
+                    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.8f, 0.2f, 1.0f)); // Warning Orange/Yellow
+                    ImGui::TextWrapped("(!) Warning: Non-uniform parent scale detected.");
+                    ImGui::PopStyleColor();
+
+                    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.7f, 0.7f, 0.7f, 1.0f)); // Muted Gray
+                    ImGui::TextWrapped("Rotating this child may result in skew/shear distortion because the parent's axes are not equal in length.");
+                    ImGui::PopStyleColor();
+                }
+            }
         }
 
         ImGui::Separator();
@@ -366,6 +431,8 @@ void Application::PushCommand(std::unique_ptr<Command> cmd) {
 void Application::Undo() {
     if (m_UndoStack.empty()) return;
 
+    m_SelectedGameObject = nullptr;
+
     auto cmd = std::move(m_UndoStack.back());
     m_UndoStack.pop_back();
 
@@ -376,9 +443,65 @@ void Application::Undo() {
 void Application::Redo() {
     if (m_RedoStack.empty()) return;
 
+    m_SelectedGameObject = nullptr;
+
     auto cmd = std::move(m_RedoStack.back());
     m_RedoStack.pop_back();
 
     cmd->Execute();
     m_UndoStack.push_back(std::move(cmd));
+}
+
+void Application::SpawnStackTestCase() {
+    auto batch = std::make_unique<BatchCommand>();
+    SceneBuilder builder = { m_ActiveScene.get(), batch.get() };
+
+    builder.CreateObject("Cube 1", m_CubeMesh.get(), nullptr,
+                         glm::vec3(0.0f, 0.9f, 0.0f));
+
+    builder.CreateObject("Cube 2", m_CubeMesh.get(), nullptr,
+                         glm::vec3(-1.5f, 2.0f, 0.0f));
+
+    builder.CreateObject("Cube 3", m_CubeMesh.get(), nullptr,
+                         glm::vec3(-1.5f, 3.0f, -2.0f));
+
+    m_UndoStack.push_back(std::move(batch));
+    m_RedoStack.clear();
+
+    if (m_UndoStack.size() > MAX_UNDO_STEPS) {
+        m_UndoStack.pop_front();
+    }
+}
+
+void Application::SpawnTableTestCase() {
+    auto batch = std::make_unique<BatchCommand>();
+    SceneBuilder builder = { m_ActiveScene.get(), batch.get() };
+
+    // 1. Create Group
+    GameObject* group = builder.CreateObject("Table_Assembly", nullptr, nullptr,
+                                             glm::vec3(10.0f, 0.0f, 0.0f));
+
+    // 2. Create Top
+    builder.CreateObject("Table_Top", m_CubeMesh.get(), group,
+                         glm::vec3(0.0f, 4.75f, 0.0f), glm::vec3(10.0f, 1.5f, 5.0f));
+
+    // 3. Create Legs
+    float offsetX = 4.75f;
+    float offsetZ = 2.25f;
+    glm::vec3 positions[] = {
+        {  offsetX, 2.0f,  offsetZ }, { -offsetX, 2.0f,  offsetZ },
+        {  offsetX, 2.0f, -offsetZ }, { -offsetX, 2.0f, -offsetZ }
+    };
+
+    for (int i = 0; i < 4; ++i) {
+        builder.CreateObject("Leg_" + std::to_string(i + 1), m_CubeMesh.get(), group,
+                             positions[i], glm::vec3(0.5f, 4.0f, 0.5f));
+    }
+
+    m_UndoStack.push_back(std::move(batch));
+    m_RedoStack.clear();
+
+    if (m_UndoStack.size() > MAX_UNDO_STEPS) {
+        m_UndoStack.pop_front();
+    }
 }

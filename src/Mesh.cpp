@@ -1,8 +1,13 @@
 #include "Mesh.h"
 
 Mesh::Mesh(std::vector<Vertex> vertices) {
-    this->vertices = vertices;
+    this->m_Vertices = vertices;
     SetupMesh();
+}
+
+Mesh::~Mesh() {
+    glDeleteVertexArrays(1, &VAO);
+    glDeleteBuffers(1, &VBO);
 }
 
 void Mesh::SetupMesh() {
@@ -15,7 +20,7 @@ void Mesh::SetupMesh() {
 
     // 2. Bind and set the Vertex Buffer
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0], GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, m_Vertices.size() * sizeof(Vertex), &m_Vertices[0], GL_STATIC_DRAW);
 
     // 3. Set the Vertex Attribute Pointers
     // Position Attribute (Location 0)
@@ -31,6 +36,6 @@ void Mesh::SetupMesh() {
 
 void Mesh::Draw() {
     glBindVertexArray(VAO);
-    glDrawArrays(GL_TRIANGLES, 0, vertices.size());
+    glDrawArrays(GL_TRIANGLES, 0, m_Vertices.size());
     glBindVertexArray(0);
 }

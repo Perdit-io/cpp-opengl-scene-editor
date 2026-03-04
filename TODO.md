@@ -14,5 +14,5 @@
 
 ## Test Cases
 - [x] 1. Replicate 3-Cube Scene (Exact Transforms)
-- [ ] 2. Assemble Primitive Table (10x1.5x5)
+- [x] 2. Assemble Primitive Table (10x1.5x5)
 - [ ] 3. Load Sponza Scene & Navigate

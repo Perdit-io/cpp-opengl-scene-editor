@@ -13,12 +13,18 @@ public:
     Transform transform;
     bool markedForDeletion = false;
 
-    GameObject* parent = nullptr;
-    std::vector<GameObject*> children;
+    void SetParent(GameObject* newParent);
+    GameObject* GetParent() const { return m_Parent; }
+    const std::vector<GameObject*>& GetChildren() const { return m_Children; }
 
     glm::mat4 GetWorldMatrix() const;
-    void AddChild(GameObject* child);
 
     Mesh* mesh = nullptr;
     glm::vec3 color = {1.0f, 0.5f, 0.2f};
+
+    bool IsDescendantOf(GameObject* potentialAncestor) const;
+
+private:
+    GameObject* m_Parent = nullptr;
+    std::vector<GameObject*> m_Children;
 };

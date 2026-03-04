@@ -11,7 +11,7 @@ GameObject* Scene::CreateGameObject(const std::string& name) {
     auto obj = std::make_unique<GameObject>();
     obj->name = name;
     GameObject* ptr = obj.get();
-    m_Root->AddChild(ptr);
+    ptr->SetParent(m_Root.get());
     m_GameObjects.push_back(std::move(obj));
     return ptr;
 }
@@ -19,11 +19,7 @@ GameObject* Scene::CreateGameObject(const std::string& name) {
 void Scene::DestroyGameObject(GameObject* obj) {
     if (!obj || obj == m_Root.get()) return;
 
-    GameObject* parent = obj->parent;
-    if (parent) {
-        auto& children = parent->children;
-        children.erase(std::remove(children.begin(), children.end(), obj), children.end());
-    }
+    obj->SetParent(nullptr);
 
     m_GameObjects.erase(
         std::remove_if(m_GameObjects.begin(), m_GameObjects.end(),
@@ -35,12 +31,7 @@ void Scene::DestroyGameObject(GameObject* obj) {
 std::unique_ptr<GameObject> Scene::ExtractGameObject(GameObject* obj) {
     if (!obj || obj == m_Root.get()) return nullptr;
 
-    if (obj->parent) {
-        auto& siblings = obj->parent->children;
-        siblings.erase(std::remove(siblings.begin(), siblings.end(), obj), siblings.end());
-
-        obj->parent = nullptr;
-    }
+    obj->SetParent(nullptr);
 
     for (auto it = m_GameObjects.begin(); it != m_GameObjects.end(); ++it) {
         if (it->get() == obj) {
@@ -55,8 +46,7 @@ std::unique_ptr<GameObject> Scene::ExtractGameObject(GameObject* obj) {
 void Scene::ReinsertGameObject(std::unique_ptr<GameObject> obj) {
     if (!obj) return;
 
-    GameObject* rawPtr = obj.get();
-    m_Root->AddChild(rawPtr);
+    obj.get()->SetParent(m_Root.get());
 
     m_GameObjects.push_back(std::move(obj));
 }
