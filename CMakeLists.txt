@@ -55,6 +55,7 @@ add_executable(SceneEditor
     src/Commands/TransformCommand.cpp
     src/Commands/DeleteCommand.cpp
     src/Commands/BatchParentCommand.cpp
+    src/Commands/TextureCommand.cpp
 
     # Assets
     src/Assets/MeshLoader.cpp

@@ -35,10 +35,12 @@ private:
     std::unique_ptr<Mesh> m_PlaneMesh;
     std::unique_ptr<Mesh> m_SphereMesh;
     std::vector<std::unique_ptr<Mesh>> m_LoadedMeshes;
+    std::vector<std::unique_ptr<Texture>> m_LoadedTextures;
     GameObject* m_SelectedGameObject = nullptr;
     std::unique_ptr<Texture> m_FloorTexture;
     std::unique_ptr<Camera> m_Camera;
     unsigned int m_SpawnCount = 0;
+    std::unique_ptr<Texture> m_TextureFallback;
 
     std::deque<std::unique_ptr<Command>> m_UndoStack;
     std::deque<std::unique_ptr<Command>> m_RedoStack;
@@ -51,4 +53,5 @@ private:
 
     void SpawnStackTestCase();
     void SpawnTableTestCase();
+    void SpawnSponzaTestCase();
 };

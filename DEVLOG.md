@@ -1,5 +1,11 @@
 # Development Log - Scene Editor
 
+## Milestone 16: UI-Driven Materials & Undoable Texturing
+**Goal:** Develop a professional material inspector with resource caching and integrated undo/redo support to enable non-destructive real-time asset editing.
+
+## Milestone 15: Hierarchical Materials & Asset Automation
+**Goal:** Implement full scene hierarchy support for complex models and automate material assignment via MTL parsing to achieve a professional asset-loading pipeline.
+
 ## Milestone 14: Texture Mapping & UV Coordination
 **Goal:** Implement 2D image support via stb_image, enabling per-object diffuse textures with integrated UV mapping for all primitives and imported models.
 

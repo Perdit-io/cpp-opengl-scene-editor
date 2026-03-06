@@ -1,5 +1,4 @@
 #include "MeshLoader.h"
-#include "Model.h"
 #include "Mesh.h"
 
 #include <GLFW/glfw3.h>
@@ -8,8 +7,9 @@
 #include <sstream>
 #include <algorithm>
 
-std::vector<SubMeshData> MeshLoader::LoadOBJ(const std::string& path) {
-    std::vector<SubMeshData> subMeshes;
+ModelData MeshLoader::LoadOBJ(const std::string& path) {
+    ModelData data;
+
     std::vector<glm::vec3> temp_positions;
     std::vector<glm::vec3> temp_normals;
     std::vector<glm::vec2> temp_uvs;
@@ -17,12 +17,13 @@ std::vector<SubMeshData> MeshLoader::LoadOBJ(const std::string& path) {
     std::ifstream file(path);
     if (!file.is_open()) {
         std::cerr << "ERROR: Could not open OBJ file at: " << path << std::endl;
-        return subMeshes;
+        return data;
     }
 
     double startTime = glfwGetTime();
     std::cout << "--- Starting Import: " << path << " ---" << std::endl;
 
+    std::string directory = path.substr(0, path.find_last_of("/\\") + 1);
     std::string line;
     SubMeshData currentMesh;
     currentMesh.name = "Initial_Mesh";
@@ -32,10 +33,22 @@ std::vector<SubMeshData> MeshLoader::LoadOBJ(const std::string& path) {
         std::string prefix;
         ss >> prefix;
 
-        if (prefix == "o" || prefix == "g") {
+        if (prefix == "mtllib") {
+            std::string mtlFile;
+            ss >> mtlFile;
+            data.materialTextures = ParseMTL(directory + mtlFile);
+        }
+        else if (prefix == "usemtl") {
+            if (!currentMesh.vertices.empty()) {
+                data.subMeshes.push_back(currentMesh);
+                currentMesh.vertices.clear();
+            }
+            ss >> currentMesh.materialName;
+        }
+        else if (prefix == "o" || prefix == "g") {
             // If the current mesh has data, save it before starting a new one
             if (!currentMesh.vertices.empty()) {
-                subMeshes.push_back(currentMesh);
+                data.subMeshes.push_back(currentMesh);
                 currentMesh.vertices.clear();
             }
             ss >> currentMesh.name;
@@ -60,6 +73,9 @@ std::vector<SubMeshData> MeshLoader::LoadOBJ(const std::string& path) {
                 std::string vertexData;
                 ss >> vertexData;
 
+                // Check for the double-slash indicating missing UVs (v//vn)
+                bool hasNoUV = (vertexData.find("//") != std::string::npos);
+
                 std::replace(vertexData.begin(), vertexData.end(), '/', ' ');
                 std::stringstream vss(vertexData);
 
@@ -69,13 +85,12 @@ std::vector<SubMeshData> MeshLoader::LoadOBJ(const std::string& path) {
                 Vertex v;
                 v.Position = temp_positions[vIdx - 1];
 
-                bool hasNoUV = (vertexData.find("  ") != std::string::npos);
-
                 if (hasNoUV) {
-                    vss >> vnIdx;
+                    vss >> vnIdx; // v//vn format: skip vtIdx and read vnIdx
                     v.Normal = temp_normals[vnIdx - 1];
                     v.TexCoords = glm::vec2(0.0f);
                 } else {
+                    // v/vt/vn or v/vt format
                     if (vss >> vtIdx) {
                         v.TexCoords = temp_uvs[vtIdx - 1];
                     }
@@ -89,7 +104,7 @@ std::vector<SubMeshData> MeshLoader::LoadOBJ(const std::string& path) {
     }
 
     if (!currentMesh.vertices.empty()) {
-        subMeshes.push_back(currentMesh);
+        data.subMeshes.push_back(currentMesh);
     }
 
     double endTime = glfwGetTime();
@@ -97,9 +112,28 @@ std::vector<SubMeshData> MeshLoader::LoadOBJ(const std::string& path) {
 
     std::cout << "--- Import Complete ---" << std::endl;
     std::cout << "  Total Vertices: " << temp_positions.size() << std::endl;
-    std::cout << "  Total Faces:    " << currentMesh.vertices.size() / 3 << std::endl;
+    std::cout << "  Total Faces:    " << data.subMeshes.size() << std::endl;
     std::cout << "  Time Taken:     " << duration << " seconds" << std::endl;
     std::cout << "-----------------------" << std::endl;
 
-    return subMeshes;
+    return data;
+}
+
+std::map<std::string, std::string> MeshLoader::ParseMTL(const std::string& path) {
+    std::map<std::string, std::string> materialMap;
+    std::ifstream file(path);
+    if (!file.is_open()) return materialMap;
+
+    std::string line, currentMat, prefix;
+    while (std::getline(file, line)) {
+        std::stringstream ss(line);
+        ss >> prefix;
+        if (prefix == "newmtl") ss >> currentMat;
+        else if (prefix == "map_Kd") {
+            std::string texPath;
+            ss >> texPath;
+            materialMap[currentMat] = texPath;
+        }
+    }
+    return materialMap;
 }

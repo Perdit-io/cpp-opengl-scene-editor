@@ -9,6 +9,7 @@
 #include "CreateCommand.h"
 #include "TransformCommand.h"
 #include "DeleteCommand.h"
+#include "TextureCommand.h"
 #include "PrimitiveGenerator.h"
 #include "BatchParentCommand.h"
 #include "SceneBuilder.h"
@@ -38,6 +39,7 @@ Application::Application(const char* title, int width, int height) {
 
     m_FloorTexture = std::make_unique<Texture>("assets/textures/floor.jpg", "diffuse");
     floor->texture = m_FloorTexture.get();
+    m_TextureFallback = std::make_unique<Texture>("assets/textures/floor.jpg", "diffuse");
 
     m_Camera = std::make_unique<Camera>(glm::vec3(0.0f, 7.0f, 35.0f));
 }
@@ -66,6 +68,7 @@ bool Application::InitWindow(const char* title, int width, int height) {
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) return false;
 
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
     glfwSwapInterval(0);
 
     return true;
@@ -230,24 +233,33 @@ void Application::DrawUI() {
         ImGui::Separator();
 
         if (ImGui::Button("Import OBJ")) {
-            std::vector<SubMeshData> subMeshes = MeshLoader::LoadOBJ(objPath);
+            ModelData modelData = MeshLoader::LoadOBJ(objPath);
 
-            if (!subMeshes.empty()) {
-                m_SelectedGameObject = nullptr;
+            std::string objDir = std::string(objPath).substr(0, std::string(objPath).find_last_of("/\\") + 1);
+            std::string parentDir = objDir.substr(0, objDir.find_last_of("/\\", objDir.length() - 2) + 1);
 
+            if (!modelData.subMeshes.empty()) {
                 auto batch = std::make_unique<BatchCommand>();
                 SceneBuilder builder = { m_ActiveScene.get(), batch.get() };
-
-                std::string rootName = "Model: " + std::string(objPath);
-                GameObject* rootObj = builder.CreateObject(rootName, nullptr, nullptr, nullptr,
+                GameObject* rootObj = builder.CreateObject("Sponza_Root", nullptr, nullptr, nullptr,
                                                           glm::vec3(0.0f), glm::vec3(importScale));
 
-                for (auto& sm : subMeshes) {
+                for (auto& sm : modelData.subMeshes) {
                     auto newMesh = std::make_unique<Mesh>(sm.vertices);
-
                     m_LoadedMeshes.push_back(std::move(newMesh));
 
-                    builder.CreateObject(sm.name, m_LoadedMeshes.back().get(), nullptr, rootObj);
+                    Texture* texPtr = nullptr;
+                    if (modelData.materialTextures.count(sm.materialName)) {
+                        std::string relPath = modelData.materialTextures[sm.materialName];
+
+                        std::string finalPath = parentDir + relPath;
+
+                        auto newTex = std::make_unique<Texture>(finalPath, "diffuse");
+                        texPtr = newTex.get();
+                        m_LoadedTextures.push_back(std::move(newTex));
+                    }
+
+                    builder.CreateObject(sm.name, m_LoadedMeshes.back().get(), texPtr, rootObj);
                 }
 
                 m_UndoStack.push_back(std::move(batch));
@@ -269,6 +281,10 @@ void Application::DrawUI() {
         if (ImGui::MenuItem("Spawn Test Case 2 (Table)")) {
             m_SelectedGameObject = nullptr;
             SpawnTableTestCase();
+        }
+        if (ImGui::MenuItem("Spawn Test Case 3 (Sponza Environment)")) {
+            m_SelectedGameObject = nullptr;
+            SpawnSponzaTestCase();
         }
 
         ImGui::EndPopup();
@@ -366,6 +382,47 @@ void Application::DrawInspector() {
         }
 
         ImGui::Separator();
+        ImGui::Text("Material Properties");
+
+        // Display current texture path if available
+        std::string currentPath = m_SelectedGameObject->texture ? m_SelectedGameObject->texture->GetPath() : "None";
+        ImGui::Text("Current: %s", currentPath.c_str());
+
+        // Buffer for new texture path
+        static char texPathBuffer[256] = "assets/textures/";
+        ImGui::InputText("New Texture Path", texPathBuffer, 256);
+
+        if (ImGui::Button("Apply Texture")) {
+            std::string pathStr(texPathBuffer);
+
+            Texture* existingTex = nullptr;
+            for (auto& tex : m_LoadedTextures) {
+                if (tex->GetPath() == pathStr) {
+                    existingTex = tex.get();
+                    break;
+                }
+            }
+
+            if (existingTex) {
+                m_SelectedGameObject->texture = existingTex;
+            } else {
+                auto newTex = std::make_unique<Texture>(pathStr, "diffuse");
+                if (newTex->GetID() != 0) {
+                    existingTex = newTex.get();
+                    m_SelectedGameObject->texture = newTex.get();
+                    m_LoadedTextures.push_back(std::move(newTex));
+                }
+            }
+
+            auto cmd = std::make_unique<TextureCommand>(m_SelectedGameObject, existingTex);
+            PushCommand(std::move(cmd));
+        }
+
+        if (ImGui::Button("Remove Texture")) {
+            m_SelectedGameObject->texture = nullptr;
+        }
+
+        ImGui::Separator();
 
         ImGui::Text("Relationship");
 
@@ -455,11 +512,13 @@ void Application::RenderScene() {
         if (obj->mesh) {
             m_MainShader->SetVec3("objectColor", obj->color);
             m_MainShader->SetMat4("model", obj->GetWorldMatrix());
-            if (obj->texture) {
+            if (obj->texture && obj->texture->GetID() != 0) {
                 m_MainShader->SetBool("useTexture", true);
                 obj->texture->Bind(0);
             } else {
+                // If texture failed or is null, use the fallback and set useTexture to false
                 m_MainShader->SetBool("useTexture", false);
+                m_TextureFallback->Bind(0);
             }
             obj->mesh->Draw();
         }
@@ -541,6 +600,57 @@ void Application::SpawnTableTestCase() {
     for (int i = 0; i < 4; ++i) {
         builder.CreateObject("Leg_" + std::to_string(i + 1), m_CubeMesh.get(), nullptr, group,
                              positions[i], glm::vec3(0.5f, 4.0f, 0.5f));
+    }
+
+    m_UndoStack.push_back(std::move(batch));
+    m_RedoStack.clear();
+
+    if (m_UndoStack.size() > MAX_UNDO_STEPS) {
+        m_UndoStack.pop_front();
+    }
+}
+
+void Application::SpawnSponzaTestCase() {
+    std::string path = "assets/models/sponza.obj";
+    float scale = 0.05f;
+
+    ModelData modelData = MeshLoader::LoadOBJ(path);
+
+    std::string objDir = path.substr(0, path.find_last_of("/\\") + 1);
+    std::string parentDir = objDir.substr(0, objDir.find_last_of("/\\", objDir.length() - 2) + 1);
+
+    auto batch = std::make_unique<BatchCommand>();
+    SceneBuilder builder = { m_ActiveScene.get(), batch.get() };
+
+    GameObject* rootObj = builder.CreateObject("Sponza_Environment", nullptr, nullptr, nullptr,
+                                               glm::vec3(0.0f), glm::vec3(scale));
+
+    for (auto& sm : modelData.subMeshes) {
+        auto newMesh = std::make_unique<Mesh>(sm.vertices);
+        m_LoadedMeshes.push_back(std::move(newMesh));
+
+        Texture* texPtr = nullptr;
+        if (modelData.materialTextures.count(sm.materialName)) {
+            std::string relPath = modelData.materialTextures[sm.materialName];
+            std::string finalPath = parentDir + relPath;
+
+            for (auto& tex : m_LoadedTextures) {
+                if (tex->GetPath() == finalPath) {
+                    texPtr = tex.get();
+                    break;
+                }
+            }
+
+            if (!texPtr) {
+                auto newTex = std::make_unique<Texture>(finalPath, "diffuse");
+                if (newTex->GetID() != 0) {
+                    texPtr = newTex.get();
+                    m_LoadedTextures.push_back(std::move(newTex));
+                }
+            }
+        }
+
+        builder.CreateObject(sm.name, m_LoadedMeshes.back().get(), texPtr, rootObj);
     }
 
     m_UndoStack.push_back(std::move(batch));
