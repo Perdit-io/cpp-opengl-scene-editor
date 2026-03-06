@@ -72,6 +72,7 @@ target_include_directories(SceneEditor PRIVATE
     "${CMAKE_SOURCE_DIR}/dependencies/glm"
     "${CMAKE_SOURCE_DIR}/dependencies/imgui"
     "${CMAKE_SOURCE_DIR}/dependencies/stb"
+    "${CMAKE_SOURCE_DIR}/dependencies/tinyobjloader"
 )
 
 target_link_libraries(SceneEditor PRIVATE glfw glad imgui)

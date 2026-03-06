@@ -6,7 +6,7 @@
 * **Windowing:** GLFW 3.3
 * **UI:** Dear ImGui v1.92.6-docking
 * **Math:** GLM 1.0.3
-* **Assets:** tinyobjloader & stb_image
+* **Assets:** tinyobjloader v1.0.6 & stb_image v2.30
 
 ## Key Systems
 ### Transform Hierarchy

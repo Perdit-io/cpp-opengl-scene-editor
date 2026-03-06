@@ -241,7 +241,7 @@ void Application::DrawUI() {
             if (!modelData.subMeshes.empty()) {
                 auto batch = std::make_unique<BatchCommand>();
                 SceneBuilder builder = { m_ActiveScene.get(), batch.get() };
-                GameObject* rootObj = builder.CreateObject("Sponza_Root", nullptr, nullptr, nullptr,
+                GameObject* rootObj = builder.CreateObject(std::string(objPath) + "_Root", nullptr, nullptr, nullptr,
                                                           glm::vec3(0.0f), glm::vec3(importScale));
 
                 for (auto& sm : modelData.subMeshes) {
@@ -249,8 +249,8 @@ void Application::DrawUI() {
                     m_LoadedMeshes.push_back(std::move(newMesh));
 
                     Texture* texPtr = nullptr;
-                    if (modelData.materialTextures.count(sm.materialName)) {
-                        std::string relPath = modelData.materialTextures[sm.materialName];
+                    if (modelData.materialTextures.count(sm.materialId)) {
+                        std::string relPath = modelData.materialTextures[sm.materialId];
 
                         std::string finalPath = parentDir + relPath;
 
@@ -630,8 +630,8 @@ void Application::SpawnSponzaTestCase() {
         m_LoadedMeshes.push_back(std::move(newMesh));
 
         Texture* texPtr = nullptr;
-        if (modelData.materialTextures.count(sm.materialName)) {
-            std::string relPath = modelData.materialTextures[sm.materialName];
+        if (modelData.materialTextures.count(sm.materialId)) {
+            std::string relPath = modelData.materialTextures[sm.materialId];
             std::string finalPath = parentDir + relPath;
 
             for (auto& tex : m_LoadedTextures) {
