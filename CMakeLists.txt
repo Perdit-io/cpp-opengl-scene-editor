@@ -11,6 +11,7 @@ FetchContent_Declare(glfw
     GIT_REPOSITORY https://github.com/glfw/glfw.git
     GIT_TAG 3.3.8
 )
+
 FetchContent_MakeAvailable(glfw)
 
 # 2. Setup GLAD
@@ -24,12 +25,12 @@ file(GLOB IMGUI_SOURCES
     "${CMAKE_SOURCE_DIR}/dependencies/imgui/*.cpp"
     "${CMAKE_SOURCE_DIR}/dependencies/imgui/backends/imgui_impl_glfw.cpp"
     "${CMAKE_SOURCE_DIR}/dependencies/imgui/backends/imgui_impl_opengl3.cpp")
-add_library(imgui ${IMGUI_SOURCES})
+add_library(imgui STATIC ${IMGUI_SOURCES})
 target_include_directories(imgui PUBLIC
     "${CMAKE_SOURCE_DIR}/dependencies/imgui"
     "${CMAKE_SOURCE_DIR}/dependencies/imgui/backends"
 )
-target_link_libraries(imgui PRIVATE glfw glad)
+target_link_libraries(imgui PUBLIC glfw glad)
 
 # 4. Main Executable
 add_executable(SceneEditor
@@ -75,7 +76,7 @@ target_include_directories(SceneEditor PRIVATE
     "${CMAKE_SOURCE_DIR}/dependencies/tinyobjloader"
 )
 
-target_link_libraries(SceneEditor PRIVATE glfw glad imgui)
+target_link_libraries(SceneEditor PRIVATE imgui)
 
 # 6. OS Specifics
 if(APPLE)
